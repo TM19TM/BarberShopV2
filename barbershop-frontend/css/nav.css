@@ -1,0 +1,157 @@
+/* Estilos para /css/nav.css (Barra de Navegação) */
+
+/* --- Importação das Fontes do Google (copiado do style.css) --- */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Oswald:wght@400;500;700&display=swap');
+
+/* --- Estrutura da Navbar --- */
+#main-header {
+    background: rgba(10, 10, 10, 0.9);
+    border-bottom: 1px solid #c69c6c; /* Borda dourada */
+    padding: 10px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    /* Fixa no topo com efeito de vidro */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+#main-header .logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8em;
+    color: #fff;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+#main-header .logo span {
+    color: #c69c6c;
+}
+
+/* --- Links de Navegação --- */
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 15px;
+}
+
+.nav-links a {
+    font-family: 'Oswald', sans-serif;
+    text-decoration: none;
+    color: #ccc;
+    font-size: 1em;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: #fff;
+    background-color: #333;
+}
+
+/* Link Ativo (página atual) */
+.nav-links a.active {
+    color: #1a1a1a;
+    background-color: #c69c6c;
+    box-shadow: 0 2px 10px rgba(198, 156, 108, 0.2);
+}
+
+/* --- Menu do Usuário (Logout) --- */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-menu .user-name {
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+.user-menu .user-name strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+#btn-logout {
+    font-family: 'Oswald', sans-serif;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+#btn-logout:hover {
+    background: #c82333;
+}
+
+/* --- Menu Mobile (Hamburger) --- */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+.menu-toggle .bar {
+    width: 25px;
+    height: 3px;
+    background-color: #fff;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* --- Responsividade da Navbar --- */
+@media (max-width: 900px) {
+    #main-header {
+        padding: 15px 20px;
+        flex-wrap: wrap;
+    }
+    .menu-toggle {
+        display: flex;
+    }
+    .nav-links {
+        display: none; /* Escondido por padrão */
+        flex-direction: column;
+        width: 100%;
+        background-color: #1a1a1a;
+        margin-top: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .nav-links.active {
+        display: flex; /* Mostra quando 'active' */
+    }
+    .nav-links a {
+        padding: 15px 20px;
+        border-radius: 0;
+        border-bottom: 1px solid #333;
+    }
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+    
+    .user-menu {
+        margin-left: auto; /* Joga o menu do usuário para a direita, oposto ao logo */
+        padding-left: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-menu .user-name {
+        display: none; /* Esconde o nome em telas muito pequenas */
+    }
+}
