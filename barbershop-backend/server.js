@@ -38,6 +38,11 @@ app.get('/', (req, res) => {
 });
 
 // -_-_-_- Iniciar o Servidor -_-_-_-
-app.listen(PORT, () => {
-    console.log(`Seu servidor Backend está rodando em http://localhost:${PORT} \n Tenha um ótimo dia :)`);
-});
+
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Seu servidor Backend está rodando em http://localhost:${PORT} \n Tenha um ótimo dia :)`)
+    });
+}
+
+module.exports = app;

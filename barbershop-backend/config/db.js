@@ -1,46 +1,74 @@
 // -_-_-_- /config/db.js -_-_-_-
-// Lida com a conexão do MongoDB e o "seeding" do admin
+// Lida com a conexão do MongoDB e o "seeding" dos usuários de teste
 
 const mongoose = require('mongoose');
-const User = require('../models/User'); // Precisamos do modelo de usuário
-const bcrypt = require('bcryptjs'); // Precisamos do bcrypt para hashear a senha
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 /**
- * @description Verifica se um usuário admin padrão existe; se não, cria um.
+ * @description Verifica se os usuários de teste padrão existem; se não, cria eles.
  */
-const seedAdminUser = async () => {
+const seedDefaultUsers = async () => {
     try {
-        const adminEmail = 'admin@admin.com';
-        const adminPassword = 'admin'; // A senha que você vai usar para logar
+        // Senha padrão para TODOS os usuários de teste
+        const defaultPassword = '123456'; 
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(defaultPassword, salt);
 
-        // 1. Procura pelo usuário admin
-        const existingAdmin = await User.findOne({ email: adminEmail });
-
-        // 2. Se o admin NÃO existir, crie um
-        if (!existingAdmin) {
-            console.log('Usuário admin nativo não encontrado. Criando...');
-
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(adminPassword, salt);
-
-            const adminUser = new User({
+        // 1. Define os 4 usuários que queremos garantir que existam
+        const usersToSeed = [
+            {
                 nome: 'Admin Nativo',
-                telefone: '00000000000',
-                dataNascimento: new Date('1990-01-01'), // Data de placeholder
-                email: adminEmail,
-                senha: hashedPassword,
-                perfil: 'admin' // O mais importante
-            });
+                email: 'admin@admin.com',
+                perfil: 'admin',
+            },
+            {
+                nome: 'Recepcionista Teste',
+                email: 'recepcao@admin.com',
+                perfil: 'recepcionista',
+            },
+            {
+                nome: 'Barbeiro Teste',
+                email: 'barbeiro@admin.com',
+                perfil: 'barbeiro',
+            },
+            {
+                nome: 'Cliente Teste',
+                email: 'cliente@cliente.com',
+                perfil: 'cliente',
+            }
+        ];
 
-            await adminUser.save();
-            console.log('Usuário admin nativo criado com sucesso!');
-            console.log(`Email: ${adminEmail}`);
-            console.log(`Senha: ${adminPassword}`);
-        } else {
-            console.log('Usuário admin nativo já existe.');
+        let createdCount = 0;
+        
+        // 2. Loop para verificar e criar cada um
+        for (const userData of usersToSeed) {
+            const existingUser = await User.findOne({ email: userData.email });
+
+            if (!existingUser) {
+                console.log(`Usuário ${userData.perfil} (${userData.email}) não encontrado. Criando...`);
+                
+                const newUser = new User({
+                    ...userData, // 'nome', 'email', 'perfil'
+                    telefone: '00000000000', // Placeholder
+                    dataNascimento: new Date('1990-01-01'), // Placeholder
+                    senha: hashedPassword,
+                });
+
+                await newUser.save();
+                createdCount++;
+            }
         }
+
+        if (createdCount > 0) {
+            console.log(`${createdCount} novo(s) usuário(s) de teste criado(s).`);
+            console.log(`A senha padrão para todos é: ${defaultPassword}`);
+        } else {
+            console.log('Todos os usuários de teste já existem.');
+        }
+
     } catch (error) {
-        console.error('Erro ao verificar ou criar usuário admin nativo:', error);
+        console.error('Erro ao verificar ou criar usuários de teste:', error);
     }
 };
 
@@ -51,8 +79,8 @@ const connectDB = async () => {
         console.log("A conexão com o MongoDB foi concluida com sucesso! tenha um otimo dia :)");
 
         // --- CHAMA A FUNÇÃO DE SEEDING AQUI ---
-        // Isso garante que só rode depois que o banco conectar.
-        await seedAdminUser();
+        // (Nome da função atualizado)
+        await seedDefaultUsers(); 
 
     } catch (err) {
         console.error("Infelizmente não conseguimos ter acesso ao MongoDB... \n", err);

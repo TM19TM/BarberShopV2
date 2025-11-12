@@ -170,14 +170,7 @@ p {
     text-decoration: underline; 
 }
 
-/* --- Sistema de Notificação (Toast) --- */
-#notification-container {
-    position: fixed; /* Fica fixo na tela */
-    top: 80px;       /* Um pouco abaixo da navbar */
-    right: 20px;
-    z-index: 9999;   /* Fica na frente de tudo */
-    width: 320px;
-}
+
 
 .toast {
     padding: 15px 20px;
