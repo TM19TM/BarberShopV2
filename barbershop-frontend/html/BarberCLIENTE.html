@@ -4,68 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Conta - BarberShop</title>
-    <!-- CSS Global -->
+    <!-- CSS Global (sobe um nível) -->
     <link rel="stylesheet" href="../css/cssGlocal.css">
-    <!-- CSS Específico da Página -->
+    <!-- CSS Específico da Página (sobe um nível) -->
     <link rel="stylesheet" href="../css/cssCliente.css">
 </head>
 <body>
+
+    <!-- A NAVBAR SERÁ INJETADA AQUI PELO nav.js -->
+    <header id="main-header"></header>
 
     <div class="container">
         
         <div class="header">
             <h1>Olá, Nome do Cliente</h1>
-            <a href="#" class="btn-agendar">
+            <a href="#" class="btn-agendar" onclick="event.preventDefault(); abrirModal('modalAgendamento')">
                 Agendar Novo Corte
             </a>
         </div>
 
         <div class="notificacoes-area">
-            <!-- Notificações serão inseridas aqui pelo JS -->
+            <!-- Notificações aparecem aqui (Ex: Aniversário) -->
         </div>
 
         <h2>Seu Próximo Agendamento</h2>
         <div class="proximo-corte">
             <!-- Conteúdo preenchido pelo JS -->
-            <h3>Carregando agendamento...</h3>
+            <h3>Carregando...</h3>
         </div>
 
         <h2>Meu Histórico de Cortes</h2>
         <ul class="historico-lista">
-            <!-- Histórico preenchido pelo JS -->
-            <li class="historico-item"><div class="info"><span>Carregando histórico...</span></div></li>
+            <!-- Conteúdo preenchido pelo JS -->
         </ul>
 
-    </div>
-
-    <!-- Modal de Agendamento -->
-    <div id="modalAgendamento" class="modal-overlay">
-        <div class="modal-content">
+    </div> 
+    
+    <!-- MODAL: NOVO AGENDAMENTO -->
+    <div id="modalAgendamento" class="modal-overlay" onclick="fecharModal('modalAgendamento')">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h2>Novo Agendamento</h2>
-                <span class="close-button">&times;</span>
+                <span class="close-button" onclick="fecharModal('modalAgendamento')">&times;</span>
             </div>
+            
             <div class="modal-body">
                 <form id="form-agendar">
-                    <!-- ... (Conteúdo do formulário) ... -->
                     <fieldset>
                         <legend>Detalhes do Serviço</legend>
                         <div class="form-group">
                             <label for="servico">Serviço Desejado</label>
                             <select id="servico" name="servico">
-                                <option value="Corte">Corte de Cabelo</option>
-                                <option value="Barba">Barba</option>
-                                <option value="Corte + Barba">Corte + Barba</option>
-                                <option value="Sombrancelha">Sombrancelha</option>
+                                <option value="corte">Corte de Cabelo</option>
+                                <option value="barba">Barba</option>
+                                <option value="corte_barba">Corte + Barba</option>
+                                <option value="sombrancelha">Sobrancelha</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="barbeiro">Preferência de Barbeiro</label>
                             <select id="barbeiro" name="barbeiro">
-                                <!-- Opções carregadas pelo JS -->
+                                <option value="">Qualquer um</option>
+                                <!-- Nomes dos barbeiros preenchidos pelo JS -->
                             </select>
                         </div>
                     </fieldset>
+
                     <fieldset>
                         <legend>Data e Hora</legend>
                         <div class="form-group">
@@ -77,8 +81,9 @@
                             <input type="time" id="horario" name="horario" min="09:00" max="20:00" step="1800" required>
                         </div>
                     </fieldset>
+
                     <div class="botoes-form">
-                        <button type="button" class="btn-cancelar-modal">Cancelar</button>
+                        <button type="button" class="btn-cancelar-modal" onclick="fecharModal('modalAgendamento')">Cancelar</button>
                         <button type="submit" class="btn-confirmar">Confirmar Agendamento</button>
                     </div>
                 </form>
@@ -86,20 +91,19 @@
         </div>
     </div>
 
-    <!-- Modal de Desmarcar -->
-    <div id="modalDesmarcar" class="modal-overlay">
-        <div class="modal-content">
+    <!-- MODAL: DESMARCAR -->
+    <div id="modalDesmarcar" class="modal-overlay" onclick="fecharModal('modalDesmarcar')">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h2>Cancelar Agendamento</h2>
-                <span class="close-button">&times;</span>
+                <span class="close-button" onclick="fecharModal('modalDesmarcar')">&times;</span>
             </div>
             <div class="modal-body">
                 <p>Tem certeza que deseja cancelar seu agendamento?</p>
                 <form id="form-cancelar">
-                    <!-- ... (Conteúdo do formulário) ... -->
                     <div class="form-group">
-                        <label for="motivo-cancelamento">Por favor, informe o motivo (obrigatório):</label>
-                        <select id="motivo-cancelamento" name="motivo" required>
+                        <label for="motivo-cancelamento">Por favor, informe o motivo (opcional):</label>
+                        <select id="motivo-cancelamento" name="motivo">
                             <option value="" disabled selected>Selecione um motivo...</option>
                             <option value="imprevisto">Tive um imprevisto</option>
                             <option value="remarcar">Vou remarcar para outra data</option>
@@ -107,12 +111,8 @@
                             <option value="outro">Outro</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="detalhes-cancelamento">Detalhes (opcional):</label>
-                        <textarea id="detalhes-cancelamento" name="detalhes" rows="3"></textarea>
-                    </div>
                     <div class="botoes-form">
-                        <button type="button" class="btn-cancelar-modal">Voltar</button>
+                        <button type="button" class="btn-cancelar-modal" onclick="fecharModal('modalDesmarcar')">Voltar</button>
                         <button type="submit" class="btn-confirmar" style="background-color: #dc3545;">Confirmar Cancelamento</button>
                     </div>
                 </form>
@@ -120,17 +120,16 @@
         </div>
     </div>
 
-    <!-- Modal de Remarcar -->
-    <div id="modalRemarcar" class="modal-overlay">
-        <div class="modal-content">
+    <!-- MODAL: REMARCAR -->
+    <div id="modalRemarcar" class="modal-overlay" onclick="fecharModal('modalRemarcar')">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h2>Remarcar Agendamento</h2>
-                <span class="close-button">&times;</span>
+                <span class="close-button" onclick="fecharModal('modalRemarcar')">&times;</span>
             </div>
             <div class="modal-body">
-                <p id="remarcar-texto-atual">Seu agendamento atual é: <strong>...</strong>.</p>
+                <p id="remarcar-texto-atual">Seu agendamento atual é: <strong>Carregando...</strong>.</p>
                 <form id="form-remarcar">
-                    <!-- ... (Conteúdo do formulário) ... -->
                     <div class="form-group">
                         <label for="nova-data">Escolha o novo dia:</label>
                         <input type="date" id="nova-data" name="nova-data" required>
@@ -140,7 +139,7 @@
                         <input type="time" id="novo-horario" name="novo-horario" min="09:00" max="20:00" step="1800" required>
                     </div>
                     <div class="botoes-form">
-                        <button type="button" class="btn-cancelar-modal">Voltar</button>
+                        <button type="button" class="btn-cancelar-modal" onclick="fecharModal('modalRemarcar')">Voltar</button>
                         <button type="submit" class="btn-confirmar">Confirmar Remarcação</button>
                     </div>
                 </form>
@@ -148,6 +147,8 @@
         </div>
     </div>
 
+    <!-- SCRIPT DA NAVBAR (DEVE VIR PRIMEIRO NO BODY) -->
+    <script src="../js/nav.js" defer></script>
     <!-- Script Específico da Página -->
     <script src="../js/scriptCliente.js" defer></script>
 </body>

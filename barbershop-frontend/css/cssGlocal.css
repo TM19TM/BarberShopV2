@@ -1,13 +1,168 @@
-/* Estilos globais - /css/style.css */
-body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    margin: 0;
+/* Estilos globais - /css/cssGlocal.css */
 
-    /* Imagem de Fundo Padrão */
-    background-image: url('../BarberIMG.png'); /* Caminho corrigido para subir um nível */
+/* --- Importação das Fontes do Google --- */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Oswald:wght@400;500;700&display=swap');
+
+/* --- Reset Básico e Tema --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    min-height: 100vh;
+    padding-top: 20px; /* Espaço para o conteúdo abaixo da navbar sticky */
+    padding-bottom: 50px;
+    line-height: 1.6;
+    
+    /* Imagem de Fundo (assumindo que BarberIMG.png está na raiz do frontend) */
+    background-image: url('../BarberIMG.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    background-repeat: no-repeat;
+    
+    /* Cor base do texto */
+    color: #f0f0f0; 
+}
+
+/* --- Importação da Navbar --- */
+@import url('nav.css');
+/* --------------------------- */
+
+
+/* --- O Novo Container Principal --- */
+.container {
+    max-width: 1000px; 
+    margin: 20px auto; 
+    
+    /* --- Efeito "Vidro Fosco" (Glassmorphism) --- */
+    background: rgba(10, 10, 10, 0.85);
+    border: 1px solid rgba(198, 156, 108, 0.2); /* Borda dourada sutil */
+    border-radius: 12px; 
+    padding: 30px 40px; 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+/* --- Títulos e Textos --- */
+h1, h2, h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.2em;
+    color: #c69c6c; /* Dourado */
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #c69c6c;
+}
+
+h2 {
+    font-size: 1.6em;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+    margin-top: 30px;
+}
+
+p {
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+/* --- Formulários (Inputs) --- */
+.form-group { 
+    margin-bottom: 15px; 
+}
+
+.form-group label { 
+    display: block; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+    font-family: 'Oswald', sans-serif;
+    color: #c69c6c;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea { 
+    width: 100%; 
+    padding: 12px 15px; 
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #555;
+    color: #fff; 
+    border-radius: 5px; 
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+    font-size: 1em;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #c69c6c;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(198, 156, 108, 0.3);
+}
+
+/* --- Botões --- */
+.form-button { 
+    width: 100%; 
+    padding: 12px; 
+    background-color: #c69c6c; /* Dourado */
+    color: #1a1a1a;
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 1.1em; 
+    font-weight: bold;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.form-button:hover { 
+    background-color: #e0b07c;
+    box-shadow: 0 4px 15px rgba(198, 156, 108, 0.3);
+}
+
+.form-button:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* Links (Ex: Esqueci minha senha) */
+.form-links { 
+    text-align: center; 
+    margin-top: 20px; 
+}
+
+.form-links a,
+.form-links span {
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+.form-links a { 
+    color: #c69c6c; 
+    text-decoration: none; 
+    cursor: pointer;
+    font-weight: bold;
+}
+.form-links a:hover { 
+    text-decoration: underline; 
 }

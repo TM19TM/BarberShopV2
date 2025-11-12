@@ -1,122 +1,95 @@
-/* Estilos para /css/recepcionista.css */
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background: #fff;
-    /* Fundo branco para legibilidade */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+/* Estilos Específicos para /css/cssRecepcionista.css */
+
+.colunas { 
+    display: grid; 
+    grid-template-columns: 2fr 1fr; /* Coluna principal 2x maior */
+    gap: 30px; 
 }
 
-h1 {
-    text-align: center;
+/* Agenda (coluna principal) */
+.agenda-lista { list-style-type: none; padding: 0; }
+.agenda-item { 
+    background: rgba(0, 0, 0, 0.2); 
+    border: 1px solid #444; 
+    padding: 15px; 
+    margin-bottom: 10px; 
+    border-radius: 5px; 
+    transition: all 0.2s ease;
+}
+.agenda-item:hover {
+    border-color: #c69c6c;
+}
+.agenda-item .horario { 
+    font-weight: bold; 
+    font-size: 1.2em; 
+    margin-right: 15px; 
+    color: #c69c6c;
+    font-family: 'Oswald', sans-serif;
+}
+.agenda-item .barbeiro { 
+    font-weight: bold; 
+    color: #007bff; /* Azul para diferenciar */
+}
+.agenda-item strong {
+    color: #fff;
 }
 
-h2 {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+/* Feedbacks (coluna principal) */
+.feedback-lista { list-style-type: none; padding: 0; margin-top: 30px; }
+.feedback-item { 
+    background: rgba(0, 0, 0, 0.1); 
+    border: 1px solid #333; 
+    padding: 12px; 
+    margin-bottom: 8px; 
+    border-radius: 5px; 
 }
-
-.colunas {
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+.feedback-item .cliente { 
+    font-weight: bold; 
+    color: #c69c6c; 
+    font-family: 'Oswald', sans-serif;
 }
+.feedback-item .comentario { margin-top: 5px; font-style: italic; color: #ccc;}
 
-.coluna-principal {
-    flex: 2;
-    min-width: 300px; /* Largura mínima para conteúdo */
+/* Pagamentos (coluna lateral) */
+.coluna-lateral h2 {
+    color: #ffc107; /* Amarelo/Laranja */
+    border-color: #ffc107;
 }
-
-.coluna-lateral {
-    flex: 1;
-    min-width: 300px; /* Largura mínima para conteúdo */
+.pagamento-lista { list-style-type: none; padding: 0; }
+.pagamento-item { 
+    background: rgba(255, 193, 7, 0.05); 
+    border: 1px solid #ffc107; 
+    padding: 15px; 
+    margin-bottom: 10px; 
+    border-radius: 5px; 
 }
-
-.agenda-lista {
-    list-style-type: none;
-    padding: 0;
+.pagamento-item .cliente { 
+    font-weight: bold; 
+    font-size: 1.1em; 
+    color: #fff;
 }
-
-.agenda-item {
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+.pagamento-item .valor { 
+    font-size: 1.1em; 
+    color: #d9534f; /* Vermelho para pendente */
+    font-weight: bold; 
 }
-
-.agenda-item .horario {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-right: 15px;
-}
-
-.agenda-item .barbeiro {
-    font-weight: bold;
-    color: #0056b3;
-}
-
-.pagamento-lista {
-    list-style-type: none;
-    padding: 0;
-}
-
-.pagamento-item {
-    background: #fffbeb;
-    border: 1px solid #f9e0a0;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.pagamento-item .cliente {
-    font-weight: bold;
-    font-size: 1.1em;
-}
-
-.pagamento-item .valor {
-    font-size: 1.1em;
-    color: #d9534f;
-    font-weight: bold;
-}
-
-.pagamento-item button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
+.pagamento-item button { 
+    background-color: #28a745; 
+    color: white; 
+    border: none; 
+    padding: 8px 12px; 
+    border-radius: 4px; 
+    cursor: pointer; 
     margin-top: 10px;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
 }
+.pagamento-item button:hover { background-color: #218838; }
 
-.pagamento-item button:hover {
-    background-color: #218838;
-}
 
-.feedback-lista {
-    list-style-type: none;
-    padding: 0;
-    margin-top: 30px;
-}
-
-.feedback-item {
-    background: #fdfdfd;
-    border: 1px solid #eee;
-    padding: 12px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-}
-
-.feedback-item .cliente {
-    font-weight: bold;
-    color: #333;
-}
-
-.feedback-item .comentario {
-    margin-top: 5px;
-    font-style: italic;
+/* Responsividade */
+@media (max-width: 768px) {
+    .colunas {
+        grid-template-columns: 1fr; /* Empilha as colunas */
+    }
 }

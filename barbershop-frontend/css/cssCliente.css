@@ -1,101 +1,80 @@
-/* Estilos para /css/cliente.css */
-.container {
-    max-width: 900px;
-    margin: 20px auto;
-    background: rgba(255, 255, 255, 0.97);
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
+/* Estilos Específicos para /css/cssCliente.css */
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid #333;
     padding-bottom: 15px;
     margin-bottom: 20px;
 }
-
-.header h1 {
-    margin: 0;
+.header h1 { 
+    margin: 0; 
+    border: none;
+    padding: 0;
+    color: #fff;
+    font-size: 1.8em;
 }
-
 .btn-agendar {
-    background-color: #28a745;
-    color: white;
+    background-color: #c69c6c;
+    color: #1a1a1a;
     padding: 12px 20px;
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1em;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
-
-.btn-agendar:hover {
-    background-color: #218838;
-}
-
-h2 {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
-    margin-top: 30px;
+.btn-agendar:hover { 
+    background-color: #e0b07c; 
+    box-shadow: 0 4px 15px rgba(198, 156, 108, 0.3);
 }
 
 /* Área de Notificações */
 .notificacoes-area {
     margin-bottom: 20px;
 }
-
 .alerta {
     padding: 15px 20px;
     border-radius: 5px;
     font-size: 1em;
     margin-bottom: 10px;
     border: 1px solid;
+    background-color: #1a1a1a;
 }
-
 .alerta.info {
-    color: #004085;
-    background-color: #cce5ff;
+    color: #cce5ff;
     border-color: #b8daff;
 }
-
 .alerta.aviso {
-    color: #721c24;
-    background-color: #f8d7da;
+    color: #f8d7da;
     border-color: #f5c6cb;
 }
-
-.alerta a {
-    color: #721c24;
-    font-weight: bold;
-    text-decoration: underline;
-}
+.alerta a { color: #f5c6cb; font-weight: bold; text-decoration: underline; }
 
 /* Seção: Próximo Agendamento */
 .proximo-corte {
-    background-color: #e6f7ff;
-    border: 1px solid #b3e0ff;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid #c69c6c;
     border-radius: 8px;
     padding: 20px;
 }
-
-.proximo-corte h3 {
-    margin-top: 0;
-    text-align: center;
+.proximo-corte h3 { 
+    margin-top: 0; 
+    text-align: center; 
+    font-size: 1.3em; 
+    color: #c69c6c;
 }
-
 .proximo-corte .detalhes {
     font-size: 1.2em;
     line-height: 1.5;
     text-align: center;
+    color: #eee;
 }
-
-.proximo-corte .detalhes strong {
-    color: #0056b3;
-}
+.proximo-corte .detalhes strong { color: #c69c6c; }
 
 /* Botões de Gerenciamento */
 .botoes-acao {
@@ -103,8 +82,8 @@ h2 {
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
-
 .botoes-acao button {
     padding: 10px 20px;
     border: none;
@@ -112,52 +91,44 @@ h2 {
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
 }
-
 .btn-remarcar {
     background-color: #007bff;
     color: white;
 }
-
-.btn-remarcar:hover {
-    background-color: #0056b3;
-}
+.btn-remarcar:hover { background-color: #0056b3; }
 
 .btn-desmarcar {
     background-color: #dc3545;
     color: white;
 }
-
-.btn-desmarcar:hover {
-    background-color: #c82333;
-}
+.btn-desmarcar:hover { background-color: #c82333; }
 
 /* Seção: Histórico e Feedback */
-.historico-lista {
-    list-style-type: none;
-    padding: 0;
-}
-
+.historico-lista { list-style-type: none; padding: 0; }
 .historico-item {
-    background: #f9f9f9;
-    border: 1px solid #eee;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #333;
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
-
-.historico-item .info span {
-    display: block;
-    color: #555;
+.historico-item .info {
+    flex-grow: 1;
 }
-
-.historico-item .info .servico {
-    font-weight: bold;
-    font-size: 1.1em;
-    color: #333;
+.historico-item .info span { display: block; color: #ccc; }
+.historico-item .info .servico { 
+    font-weight: bold; 
+    font-size: 1.1em; 
+    color: #c69c6c; 
+    font-family: 'Oswald', sans-serif;
 }
 
 .btn-feedback {
@@ -168,25 +139,25 @@ h2 {
     border-radius: 4px;
     font-weight: bold;
     white-space: nowrap;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.9em;
 }
-
-.btn-feedback:hover {
-    background-color: #e0a800;
-}
+.btn-feedback:hover { background-color: #e0a800; }
 
 .feedback-concluido {
-    background-color: #f0f0f0;
-    color: #777;
+    background-color: #333;
+    color: #888;
     padding: 8px 12px;
     border-radius: 4px;
     font-style: italic;
     white-space: nowrap;
+    font-size: 0.9em;
 }
 
 /* Estilos do Modal (Pop-up) */
 .modal-overlay {
     display: none;
-    /* Escondido por padrão */
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -194,68 +165,46 @@ h2 {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     justify-content: center;
     align-items: center;
 }
-
 .modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px 30px;
-    border: 1px solid #888;
+    background-color: #1c1c1c;
+    border: 1px solid #c69c6c;
     border-radius: 8px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    color: #eee;
 }
-
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 15px;
-}
-
-.modal-header h2 {
+    border-bottom: 1px solid #c69c6c;
     margin: 0;
+    padding: 15px 25px;
 }
-
+.modal-header h2 { 
+    margin: 0; 
+    border: none;
+    padding: 0;
+    font-size: 1.5em;
+    color: #c69c6c;
+}
+.modal-body {
+    padding: 25px;
+}
 .close-button {
     color: #aaa;
-    float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-}
-
-.modal-body form .form-group {
-    margin-bottom: 15px;
-}
-
-.modal-body form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.modal-body form input[type="date"],
-.modal-body form input[type="time"],
-.modal-body form select,
-.modal-body form textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
+.close-button:hover { color: #fff; }
 
 .modal-body form .botoes-form {
     display: flex;
@@ -263,35 +212,30 @@ h2 {
     gap: 10px;
     margin-top: 20px;
 }
-
 .botoes-form button {
     padding: 10px 15px;
     border-radius: 5px;
     border: none;
     font-weight: bold;
     cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
 }
+.btn-confirmar { background-color: #c69c6c; color: #1a1a1a; }
+.btn-cancelar-modal { background-color: #6c757d; color: white; }
 
-.btn-confirmar {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-cancelar-modal {
-    background-color: #6c757d;
-    color: white;
-}
-
-/* --- CSS para Fieldset no Modal --- */
+/* Fieldset no Modal */
 .modal-body form fieldset {
-    border: 1px solid #ddd;
+    border: 1px solid #555;
     border-radius: 4px;
     margin-bottom: 15px;
-    padding-bottom: 10px;
+    padding: 10px 15px;
+    padding-bottom: 15px;
 }
-
 .modal-body form legend {
     font-weight: bold;
     padding: 0 10px;
-    color: #333;
+    color: #c69c6c;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
 }

@@ -1,4 +1,4 @@
-// Script para /js/recepcionista.js
+// Script para /js/scriptRecepcionista.js
 
 // URL Base da API (ajuste se o backend estiver em outro lugar)
 const API_URL = 'http://localhost:3000/api';
@@ -6,9 +6,10 @@ const API_URL = 'http://localhost:3000/api';
 // --- Funções Auxiliares ---
 function formatarHora(dataISO) {
     const data = new Date(dataISO);
-    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+    return data.toLocaleTimeString('pt-BR', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' });
 }
 function formatarValor(valor) {
+    if (typeof valor !== 'number') valor = 0;
     return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 function getNomeCliente(ag) {
@@ -64,39 +65,30 @@ function popularPagamentos(pagamentos) {
     }
     pagamentos.forEach(ag => {
         const nomeCliente = getNomeCliente(ag);
-        const valorFormatado = formatarValor(ag.valor);
         container.innerHTML += `
             <li class="pagamento-item">
                 <span class="cliente">${nomeCliente}</span>
                 <br>
                 <span>Serviço: ${ag.servico} (com ${ag.barbeiro})</span>
                 <br>
-                <span class="valor">Valor: ${valorFormatado}</span>
+                <span class="valor">Valor: ${formatarValor(ag.valor)}</span>
                 <br>
-                <button data-id="${ag._id}" data-nome="${nomeCliente}" data-valor="${valorFormatado}">Processar Pagamento</button>
+                <button onclick="processarPagamento('${ag._id}', '${nomeCliente}', '${formatarValor(ag.valor)}')">Processar Pagamento</button>
             </li>
         `;
-    });
-
-    // Adiciona listeners aos botões
-    container.querySelectorAll('button[data-id]').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const { id, nome, valor } = e.target.dataset;
-            processarPagamento(id, nome, valor);
-        });
     });
 }
 
 // --- Função de Ação ---
+
 async function processarPagamento(idPedido, nome, valor) {
-    // Confirmação nativa (pode ser trocada por um modal customizado se preferir)
     if (!confirm(`Confirmar pagamento de ${valor} para ${nome}?`)) {
         return;
     }
 
     const token = localStorage.getItem('barberToken');
     try {
-        const response = await fetch(`${API_URL}/staff/pagar/${idPedido}`, { // URL ATUALIZADA
+        const response = await fetch(`${API_URL}/staff/pagamentos/processar/${idPedido}`, { // Rota atualizada
             method: 'PUT',
             headers: { 'Authorization': 'Bearer ' + token }
         });
@@ -117,9 +109,9 @@ async function processarPagamento(idPedido, nome, valor) {
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('barberToken');
     const nomeUser = localStorage.getItem('barberUserNome');
-    const perfilUser = localStorage.getItem('barberUserProfile');
+    const perfilUser = localStorage.getItem('barberUserProfile'); 
 
-    // 1. Segurança
+    // 1. Segurança (Verificação de perfil ainda é necessária)
     if (!token || (perfilUser !== 'recepcionista' && perfilUser !== 'admin')) {
         alert('Acesso negado. Faça login como Recepção ou Admin.');
         window.location.href = 'BarberLOGIN.html';
@@ -129,30 +121,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Personalização
     try {
         document.querySelector('.container p strong').textContent = nomeUser;
-    } catch (e) { }
+    } catch (e) {}
 
     // 3. Buscar todos os dados
     try {
         const headers = { 'Authorization': 'Bearer ' + token };
 
         // Fetch 1: Agenda do Dia
-        const resAgenda = await fetch(`${API_URL}/staff/agenda-dia`, { headers }); // URL ATUALIZADA
+        const resAgenda = await fetch(`${API_URL}/staff/agenda-do-dia`, { headers }); // Rota atualizada
         if (resAgenda.ok) popularAgenda(await resAgenda.json());
 
         // Fetch 2: Feedbacks
-        const resFeedback = await fetch(`${API_URL}/staff/feedbacks-todos`, { headers }); // URL ATUALIZADA
+        const resFeedback = await fetch(`${API_URL}/staff/feedbacks-todos`, { headers }); // Rota atualizada
         if (resFeedback.ok) popularFeedbacks(await resFeedback.json());
 
         // Fetch 3: Pagamentos Pendentes
-        const resPagamentos = await fetch(`${API_URL}/staff/pagamentos-pendentes`, { headers }); // URL ATUALIZADA
+        const resPagamentos = await fetch(`${API_URL}/staff/pagamentos-pendentes`, { headers }); // Rota atualizada
         if (resPagamentos.ok) popularPagamentos(await resPagamentos.json());
 
     } catch (error) {
         console.error("Erro ao carregar dashboard:", error);
         alert('Erro ao carregar dados do servidor.');
-        if (error.message.includes('Token')) {
-            localStorage.clear();
-            window.location.href = 'BarberLOGIN.html';
-        }
     }
 });

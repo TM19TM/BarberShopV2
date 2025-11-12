@@ -3,44 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Recepção</title>
-    <!-- CSS Global -->
+    <title>Dashboard - Administrador</title>
+    <!-- CSS Global (sobe um nível) -->
     <link rel="stylesheet" href="../css/cssGlocal.css">
-    <!-- CSS Específico da Página -->
+    <!-- CSS Específico da Página (sobe um nível) -->
     <link rel="stylesheet" href="../css/cssDono.css">
 </head>
 <body>
 
+    <!-- A NAVBAR SERÁ INJETADA AQUI PELO nav.js -->
+    <header id="main-header"></header>
+
     <div class="container">
-        <h1>Dashboard da Recepção</h1>
-        <p>Olá, <strong>Nome da Recepcionista</strong>! Acompanhe a agenda e os pagamentos.</p>
+        <h1>Dashboard Administrador</h1>
+        <p>Olá, <strong>Nome do Dono</strong>! Veja o desempenho do seu negócio.</p>
 
-        <div class="colunas">
-            <div class="coluna-principal">
-                <h2>Agenda do Dia (Todos os Barbeiros)</h2>
-                <ul class="agenda-lista">
-                    <!-- Conteúdo preenchido pelo JS -->
-                </ul>
+        <div class="filtros">
+            <label for="data-inicio">De:</label>
+            <input type="date" id="data-inicio" name="data-inicio">
+            <label for="data-fim">Até:</label>
+            <input type="date" id="data-fim" name="data-fim">
+            <label for="filtro-barbeiro" style="margin-left: 20px;">Barbeiro:</label>
+            <select id="filtro-barbeiro" name="filtro-barbeiro">
+                <option value="">Todos</option>
+                 <!-- Preenchido pelo JS -->
+            </select>
+            <button>Filtrar</button>
+        </div>
 
-                <div class="feedback">
-                    <h2>Feedbacks Recentes </h2>
-                    <ul class="feedback-lista">
-                        <!-- Conteúdo preenchido pelo JS -->
-                    </ul>
-                </div>
+        <div class="relatorios">
+            <div class="widget">
+                <h2>Faturamento Total </h2>
+                <div class="valor">R$ 0,00</div>
+                <p>Período selecionado</p>
             </div>
             
-            <div class="coluna-lateral">
-                <h2>Pagamentos Pendentes</h2>
-                <p>Pedidos registrados pelos barbeiros.</p>
-                
-                <ul class="pagamento-lista">
-                    <!-- Conteúdo preenchido pelo JS -->
-                </ul>
+            <div class="widget">
+                <h2>Total de Atendimentos</h2>
+                <div class="valor">0</div>
+                <p>Período selecionado</p>
+            </div>
+
+            <div class="widget">
+                <h2>Performance dos Barbeiros</h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Barbeiro</th>
+                        <th>Atendimentos</th>
+                        <th>Faturamento</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-barbeiros-corpo">
+                    <!-- Preenchido pelo JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="widget">
+                <h2>Feedbacks Recentes </h2>
+                <table>
+                    <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Barbeiro</th> <th>Avaliação</th>
+                </tr>
+            </thead>
+                <tbody id="tabela-feedbacks-corpo">
+                    <!-- Preenchido pelo JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
+    <!-- SCRIPT DA NAVBAR (DEVE VIR PRIMEIRO NO BODY) -->
+    <script src="../js/nav.js" defer></script>
     <!-- Script Específico da Página -->
     <script src="../js/scriptDono.js" defer></script>
 </body>

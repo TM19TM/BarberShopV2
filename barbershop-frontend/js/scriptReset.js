@@ -1,22 +1,21 @@
-// Script para /js/reset.js
+// Script para /js/scriptReset.js
 
-// URL Base da API (ajuste se o backend estiver em outro lugar)
+// URL Base da API
 const API_URL = 'http://localhost:3000/api';
 
 const resetForm = document.getElementById('reset-password-form');
 
-// Pega o token da URL
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
 
 if (!token) {
-    alert('Link invalido ou não encontrado. Redirecionado para o login.');
+    alert('Link inválido ou não encontrado. Redirecionando para o login.');
     setTimeout(() => {
-        window.location.href = 'BarberLOGIN.html'; // Corrigido para LOGIN
+        window.location.href = 'BarberLOGIN.html';
     }, 1000);
 }
 
-resetForm.addEventListener('submit', async function (event) {
+resetForm.addEventListener('submit', async function(event) {
     event.preventDefault();
 
     const novaSenha = document.getElementById('nova-senha').value;
@@ -32,10 +31,10 @@ resetForm.addEventListener('submit', async function (event) {
     }
 
     try {
-        const response = await fetch(`${API_URL}/auth/reset-password`, { // URL ATUALIZADA
+        const response = await fetch(`${API_URL}/auth/reset-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: token, novaSenha: novaSenha })
+            body: JSON.stringify({ token: token, novaSenha: novaSenha})
         });
 
         const result = await response.json();
@@ -47,7 +46,7 @@ resetForm.addEventListener('submit', async function (event) {
             alert('Erro: ' + result.error);
         }
 
-    } catch (error) {
+    }catch (error) {
         console.error('Erro no reset-password:', error);
         alert('Ocorreu um erro ao redefinir a senha. Por favor, tente novamente mais tarde.');
     }

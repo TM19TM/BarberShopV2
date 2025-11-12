@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Login - BarberShop</title>
-    <!-- CSS Global -->
+    <!-- CSS Global (sobe um nível) -->
     <link rel="stylesheet" href="../css/cssGlocal.css">
-    <!-- CSS Específico da Página -->
+    <!-- CSS Específico da Página (sobe um nível) -->
     <link rel="stylesheet" href="../css/cssLogin.css">
 </head>
 <body>
@@ -35,9 +35,10 @@
             </div>
         </form>
 
-        <!-- Formulário de Cadastro (Oculto) -->
+        <!-- Formulário de Cadastro -->
         <form id="register-form">
             <h1>Cadastre-se</h1>
+            
             <div class="form-group">
                 <label for="nome-reg">Nome Completo</label>
                 <input type="text" id="nome-reg" name="nome" required>
@@ -67,10 +68,10 @@
             </div>
         </form>
 
-        <!-- Formulário de Recuperação (Oculto) -->
+        <!-- Formulário de Recuperação de Senha -->
         <form id="forgot-password-form">
             <h1>Recuperar Senha</h1>
-            <p style="text-align: center; color: #555;">Informe seu e-mail para enviarmos um link de recuperação.</p>
+            <p style="text-align: center; color: #ccc;">Informe seu e-mail para enviarmos um link de recuperação.</p>
             
             <div class="form-group">
                 <label for="email-forgot">E-mail</label>
@@ -86,7 +87,7 @@
 
     </div>
 
-    <!-- Script Específico da Página -->
+    <!-- Script Específico da Página (sobe um nível) -->
     <script src="../js/scriptLogin.js" defer></script>
 </body>
 </html>

@@ -1,113 +1,85 @@
-/* Estilos para /css/barbeiro.css */
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    /* Fundo branco para legibilidade */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+/* Estilos Específicos para /css/cssBarbeiro.css */
+
+.agenda-lista { list-style-type: none; padding: 0; }
+.agenda-item { 
+    background: rgba(0, 0, 0, 0.2); 
+    border: 1px solid #444; 
+    padding: 15px 20px; 
+    margin-bottom: 10px; 
+    border-radius: 5px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    transition: all 0.2s ease;
+}
+.agenda-item:hover {
+    border-color: #c69c6c;
+    background: rgba(198, 156, 108, 0.05);
 }
 
-h1 {
-    text-align: center;
+.agenda-item .info { font-size: 1.1em; }
+.agenda-item .horario { 
+    font-weight: bold; 
+    font-size: 1.2em; 
+    margin-right: 20px; 
+    color: #c69c6c;
+    font-family: 'Oswald', sans-serif;
 }
-
-h2 {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+.agenda-item .info strong {
+    color: #fff;
 }
-
-.agenda-lista {
-    list-style-type: none;
-    padding: 0;
+.agenda-item button { 
+    background-color: #17a2b8; 
+    color: white; 
+    border: none; 
+    padding: 10px 15px; 
+    border-radius: 4px; 
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.9em;
 }
+.agenda-item button:hover { background-color: #117a8b; }
 
-.agenda-item {
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.feedback-lista { list-style-type: none; padding: 0; }
+.feedback-item { 
+    background: rgba(0, 0, 0, 0.2); 
+    border: 1px solid #333; 
+    padding: 12px 15px; 
+    margin-bottom: 8px; 
+    border-radius: 5px; 
 }
-
-.agenda-item .info {
+.feedback-item .cliente { 
+    font-weight: bold; 
+    color: #c69c6c; 
+    font-family: 'Oswald', sans-serif;
     font-size: 1.1em;
 }
-
-.agenda-item .horario {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-right: 20px;
-}
-
-.agenda-item button {
-    background-color: #17a2b8;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.agenda-item button:hover {
-    background-color: #117a8b;
-}
-
-.feedback-lista {
-    list-style-type: none;
-    padding: 0;
-}
-
-.feedback-item {
-    background: #fdfdfd;
-    border: 1px solid #eee;
-    padding: 12px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-}
-
-.feedback-item .cliente {
-    font-weight: bold;
-    color: #333;
-}
-
-.feedback-item .comentario {
-    margin-top: 5px;
-    font-style: italic;
-}
+.feedback-item .comentario { margin-top: 5px; font-style: italic; color: #ccc; }
 
 .painel-barbeiro {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8f9fa;
+    background: rgba(0, 0, 0, 0.3);
     padding: 15px 20px;
     border-radius: 8px;
     margin: 20px 0;
-    border: 1px solid #dee2e6;
+    border: 1px solid #444;
 }
-
 .widget-contador {
     text-align: center;
 }
-
 .widget-contador h3 {
     margin: 0 0 5px 0;
     font-size: 1.1em;
-    color: #333;
+    color: #ccc;
 }
-
 .widget-contador span {
     font-size: 2.5em;
     font-weight: bold;
     color: #28a745;
 }
-
 .btn-walkin {
     background-color: #28a745;
     color: white;
@@ -117,15 +89,15 @@ h2 {
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
 }
-
 .btn-walkin:hover {
     background-color: #218838;
 }
 
 .feedback-item .valor {
-    color: #007bff;
-    /* Azul */
+    color: #007bff; /* Azul */
     font-weight: bold;
     margin-left: 10px;
 }
