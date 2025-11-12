@@ -38,14 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             
             if (response.ok){
-                alert('Cadastro finalizado com sucesso! Agora você pode fazer login.');
+                showNotification('Cadastro finalizado com sucesso! Agora você pode fazer login.');
                 mostrarPainel('login-form'); // Voltar para o painel de login
             } else {
-                alert('Erro no cadastro: ' + (result.error || 'Erro desconhecido.'));
+                showNotification('Erro no cadastro: ' + (result.error || 'Erro desconhecido.'));
             }
         } catch (error){
             console.error('Erro ao cadastrar usuário:', error);
-            alert('Não foi possivel estabelecer uma comunicação com o servidor. Tente novamente mais tarde.');
+            showNotification('Não foi possivel estabelecer uma comunicação com o servidor. Tente novamente mais tarde.');
         }
     });
 
@@ -88,15 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = 'BarberDONO.html';
                         break;
                     default:
-                        alert('Perfil de usuário desconhecido.');
+                        showNotification('Perfil de usuário desconhecido.');
                         break;
                 }
             } else {
-                alert('Erro: ' + result.error);
+                showNotification('Erro: ' + result.error);
             }
         } catch (error) {
             console.log('Erro ao tentar fazer login', error);
-            alert('Não foi possivel conectar ao servidor. Tente novamente.');
+            showNotification('Não foi possivel conectar ao servidor. Tente novamente.');
         }
     });
 
@@ -119,14 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
 
-            alert(result.message || result.error);
+            showNotification(result.message || result.error);
 
             if (response.ok) { 
                 mostrarPainel('login-form');
             }
         } catch (error) {
             console.error('Erro no forgot-password: ', error);
-            alert('Erro ao conectar com o servidor.');
+            showNotification('Erro ao conectar com o servidor.');
         } finally {
             button.disabled = false;
             button.innerText = 'Enviar Link';

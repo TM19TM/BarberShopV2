@@ -2,6 +2,40 @@
 // Este script é carregado em TODAS as páginas de dashboard (Cliente, Barbeiro, etc.)
 
 /**
+ * Mostra uma notificação (toast) na tela.
+ * @param {string} message - A mensagem para exibir.
+ * @param {string} type - 'success' (verde) ou 'error' (vermelho).
+ * @param {number} duration - Duração em milissegundos (padrão: 3000).
+ */
+function showNotification(message, type = 'error', duration = 3000) {
+    const container = document.getElementById('notification-container');
+    if (!container) return; // Não faz nada se o container não existir
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Anima a entrada
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10); // Pequeno delay para a animação funcionar
+
+    // Remove a notificação depois do tempo
+    setTimeout(() => {
+        toast.classList.remove('show');
+        
+        // Espera a animação de saída terminar para remover o elemento
+        toast.addEventListener('transitionend', () => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        });
+    }, duration);
+}
+
+/**
  * Faz o logout do usuário limpando o localStorage
  */
 function logout() {

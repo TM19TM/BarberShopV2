@@ -95,7 +95,7 @@ async function buscarDadosDashboard(token, dataInicio, dataFim, barbeiro) {
     } catch (error) {
         console.error("Erro no dashboard:", error.message);
         if (error.message.includes('Token') || error.message.includes('Acesso restrito')) {
-            alert('Sessão expirada ou acesso negado. Faça login como admin.');
+            showNotification('Sessão expirada ou acesso negado. Faça login como admin.');
             localStorage.clear();
             window.location.href = 'BarberLOGIN.html';
         }
@@ -142,11 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const barbeiro = document.getElementById('filtro-barbeiro').value;
 
         if (dataInicio && !dataFim) {
-            alert('Por favor, selecione a data final.');
+            showNotification('Por favor, selecione a data final.');
             return;
         }
         if (!dataInicio && dataFim) {
-            alert('Por favor, selecione a data inicial.');
+            showNotification('Por favor, selecione a data inicial.');
             return;
         }
         
