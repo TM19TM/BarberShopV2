@@ -1,7 +1,7 @@
 // Script para /js/scriptReset.js
 
 // URL Base da API
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://barbershopv2.onrender.com';
 
 const resetForm = document.getElementById('reset-password-form');
 

@@ -1,7 +1,7 @@
 // Script para /js/scriptRecepcionista.js
 
 // URL Base da API (ajuste se o backend estiver em outro lugar)
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://barbershopv2.onrender.com';
 
 // --- Funções Auxiliares ---
 function formatarHora(dataISO) {
