@@ -256,7 +256,7 @@ formAgendamento.addEventListener('submit', async function(event) {
     const dadosAgendamento = {servico, barbeiro, dia, horario};
     
     try {
-        const response = await fetch(`${API_URL}/agendamentos/novo`, { // Rota atualizada
+        const response = await fetch(`${API_URL}/agendamentos`, { // Rota atualizada
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
