@@ -3,6 +3,30 @@
 // URL Base da API (ajuste se o backend estiver em outro lugar)
 const API_URL = 'https://barbershopv2.onrender.com/api';
 
+function showNotification(message, type = 'error', duration = 3000) {
+    const container = document.getElementById('notification-container');
+    if (!container) return; 
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10); 
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        });
+    }, duration);
+}
+
 function mostrarPainel(idDoPainel) {
     // Esconde todos os formulários
     document.getElementById('login-form').style.display = 'none';
