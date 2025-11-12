@@ -5,7 +5,7 @@ body {
     margin: 0;
 
     /* Imagem de Fundo Padrão */
-    background-image: url('./BarberIMG.png'); /* Caminho corrigido para subir um nível */
+    background-image: url('../BarberIMG.png'); /* Caminho corrigido para subir um nível */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
