@@ -1,0 +1,110 @@
+/* Estilos para /css/dono.css */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    /* Fundo branco para legibilidade */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+}
+
+.filtros {
+    background-color: #f1f3f5;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Permite que os filtros quebrem linha em telas menores */
+    gap: 15px;
+    align-items: center;
+}
+
+.filtros label {
+    font-weight: bold;
+}
+
+.filtros input,
+.filtros select,
+.filtros button {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filtros button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+.filtros button:hover {
+    background-color: #0056b3;
+}
+
+.relatorios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.widget {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.widget h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.widget .valor {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.widget table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.widget th,
+.widget td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.widget th {
+    background-color: #f1f1f1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .relatorios {
+        grid-template-columns: 1fr; /* Coluna única em telas menores */
+    }
+    .filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filtros input,
+    .filtros select,
+    .filtros button {
+        width: 100%;
+        box-sizing: border-box; /* Garante que o padding não estoure a largura */
+    }
+    .filtros label {
+        margin-left: 0 !important;
+        margin-top: 10px;
+    }
+}

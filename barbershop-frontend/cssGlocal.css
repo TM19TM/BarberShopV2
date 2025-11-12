@@ -1,0 +1,13 @@
+/* Estilos globais - /css/style.css */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    margin: 0;
+
+    /* Imagem de Fundo Padrão */
+    background-image: url('../barberIMG.png'); /* Caminho corrigido para subir um nível */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}

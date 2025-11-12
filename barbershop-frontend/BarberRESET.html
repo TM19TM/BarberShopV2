@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha - BarberShop</title>
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="./cssGlocal.css">
+    <!-- CSS Específico da Página (Reutilizando o do Login) -->
+    <link rel="stylesheet" href="./cssLogin.css">
+</head>
+<body>
+
+    <div class="container login-container"> <!-- Adicionado .login-container para herdar estilos -->
+
+        <form id="reset-password-form">
+            <h1>Crie sua Nova Senha</h1>
+            <p style="text-align: center; color: #555;">Digite sua nova senha abaixo.</p>
+            
+            <div class="form-group">
+                <label for="nova-senha">Nova Senha</label>
+                <input type="password" id="nova-senha" name="nova-senha" required>
+            </div>
+            <div class="form-group">
+                <label for="confirma-senha">Confirme a Nova Senha</label>
+                <input type="password" id="confirma-senha" name="confirma-senha" required>
+            </div>
+            
+            <button type="submit" class="form-button">Redefinir Senha</button>
+            
+            <div class="form-links">
+                <a href="BarberLOGIN.html">Voltar ao Login</a>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Script Específico da Página -->
+    <script src="js/reset.js" defer></script>
+</body>
+</html>

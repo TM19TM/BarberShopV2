@@ -1,0 +1,100 @@
+/* Estilos para /css/login.css (Usado por LOGIN e RESET) */
+body {
+    display: grid;
+    place-items: center;
+    min-height: 90vh;
+    padding: 20px 0;
+}
+
+.login-container {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 25px 35px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+.login-container h1 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.form-button:hover {
+    background-color: #0056b3;
+}
+
+/* Botão secundário (Cadastro) */
+.form-button.btn-register {
+    background-color: #28a745;
+}
+
+.form-button.btn-register:hover {
+    background-color: #218838;
+}
+
+/* Links para trocar de formulário */
+.form-links {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.form-links a {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}
+
+/* --- CONTROLE DOS PAINÉIS --- */
+#register-form,
+#forgot-password-form {
+    display: none;
+}
+
+/* Estilo específico do RESET */
+#reset-password-form .form-button {
+    background-color: #28a745; /* Botão verde */
+}
+#reset-password-form .form-button:hover {
+    background-color: #218838;
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - BarberShop</title>
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="./cssGlocal.css">
+    <!-- CSS Específico da Página -->
+    <link rel="stylesheet" href="./cssBarbeiro.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header">
+            <h1>Olá, Nome do Cliente</h1>
+            <a href="#" class="btn-agendar">
+                Agendar Novo Corte
+            </a>
+        </div>
+
+        <div class="notificacoes-area">
+            <!-- Notificações serão inseridas aqui pelo JS -->
+        </div>
+
+        <h2>Seu Próximo Agendamento</h2>
+        <div class="proximo-corte">
+            <!-- Conteúdo preenchido pelo JS -->
+            <h3>Carregando agendamento...</h3>
+        </div>
+
+        <h2>Meu Histórico de Cortes</h2>
+        <ul class="historico-lista">
+            <!-- Histórico preenchido pelo JS -->
+            <li class="historico-item"><div class="info"><span>Carregando histórico...</span></div></li>
+        </ul>
+
+    </div>
+
+    <!-- Modal de Agendamento -->
+    <div id="modalAgendamento" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Agendamento</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="form-agendar">
+                    <!-- ... (Conteúdo do formulário) ... -->
+                    <fieldset>
+                        <legend>Detalhes do Serviço</legend>
+                        <div class="form-group">
+                            <label for="servico">Serviço Desejado</label>
+                            <select id="servico" name="servico">
+                                <option value="Corte">Corte de Cabelo</option>
+                                <option value="Barba">Barba</option>
+                                <option value="Corte + Barba">Corte + Barba</option>
+                                <option value="Sombrancelha">Sombrancelha</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="barbeiro">Preferência de Barbeiro</label>
+                            <select id="barbeiro" name="barbeiro">
+                                <!-- Opções carregadas pelo JS -->
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Data e Hora</legend>
+                        <div class="form-group">
+                            <label for="dia">Dia</label>
+                            <input type="date" id="dia" name="dia" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="horario">Horário</label>
+                            <input type="time" id="horario" name="horario" min="09:00" max="20:00" step="1800" required>
+                        </div>
+                    </fieldset>
+                    <div class="botoes-form">
+                        <button type="button" class="btn-cancelar-modal">Cancelar</button>
+                        <button type="submit" class="btn-confirmar">Confirmar Agendamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Desmarcar -->
+    <div id="modalDesmarcar" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cancelar Agendamento</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja cancelar seu agendamento?</p>
+                <form id="form-cancelar">
+                    <!-- ... (Conteúdo do formulário) ... -->
+                    <div class="form-group">
+                        <label for="motivo-cancelamento">Por favor, informe o motivo (obrigatório):</label>
+                        <select id="motivo-cancelamento" name="motivo" required>
+                            <option value="" disabled selected>Selecione um motivo...</option>
+                            <option value="imprevisto">Tive um imprevisto</option>
+                            <option value="remarcar">Vou remarcar para outra data</option>
+                            <option value="nao_preciso">Não preciso mais do serviço</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="detalhes-cancelamento">Detalhes (opcional):</label>
+                        <textarea id="detalhes-cancelamento" name="detalhes" rows="3"></textarea>
+                    </div>
+                    <div class="botoes-form">
+                        <button type="button" class="btn-cancelar-modal">Voltar</button>
+                        <button type="submit" class="btn-confirmar" style="background-color: #dc3545;">Confirmar Cancelamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Remarcar -->
+    <div id="modalRemarcar" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Remarcar Agendamento</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="remarcar-texto-atual">Seu agendamento atual é: <strong>...</strong>.</p>
+                <form id="form-remarcar">
+                    <!-- ... (Conteúdo do formulário) ... -->
+                    <div class="form-group">
+                        <label for="nova-data">Escolha o novo dia:</label>
+                        <input type="date" id="nova-data" name="nova-data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-horario">Escolha o novo horário:</label>
+                        <input type="time" id="novo-horario" name="novo-horario" min="09:00" max="20:00" step="1800" required>
+                    </div>
+                    <div class="botoes-form">
+                        <button type="button" class="btn-cancelar-modal">Voltar</button>
+                        <button type="submit" class="btn-confirmar">Confirmar Remarcação</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Específico da Página -->
+    <script src="./scriptBarbeiro.js" defer></script>
+</body>
+</html>

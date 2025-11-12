@@ -1,0 +1,297 @@
+/* Estilos para /css/cliente.css */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.btn-agendar {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-agendar:hover {
+    background-color: #218838;
+}
+
+h2 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-top: 30px;
+}
+
+/* Área de Notificações */
+.notificacoes-area {
+    margin-bottom: 20px;
+}
+
+.alerta {
+    padding: 15px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    border: 1px solid;
+}
+
+.alerta.info {
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #b8daff;
+}
+
+.alerta.aviso {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alerta a {
+    color: #721c24;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Seção: Próximo Agendamento */
+.proximo-corte {
+    background-color: #e6f7ff;
+    border: 1px solid #b3e0ff;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.proximo-corte h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.proximo-corte .detalhes {
+    font-size: 1.2em;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.proximo-corte .detalhes strong {
+    color: #0056b3;
+}
+
+/* Botões de Gerenciamento */
+.botoes-acao {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.botoes-acao button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-remarcar {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-remarcar:hover {
+    background-color: #0056b3;
+}
+
+.btn-desmarcar {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-desmarcar:hover {
+    background-color: #c82333;
+}
+
+/* Seção: Histórico e Feedback */
+.historico-lista {
+    list-style-type: none;
+    padding: 0;
+}
+
+.historico-item {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.historico-item .info span {
+    display: block;
+    color: #555;
+}
+
+.historico-item .info .servico {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.btn-feedback {
+    background-color: #ffc107;
+    color: #333;
+    padding: 8px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.btn-feedback:hover {
+    background-color: #e0a800;
+}
+
+.feedback-concluido {
+    background-color: #f0f0f0;
+    color: #777;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+/* Estilos do Modal (Pop-up) */
+.modal-overlay {
+    display: none;
+    /* Escondido por padrão */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px 30px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.modal-body form .form-group {
+    margin-bottom: 15px;
+}
+
+.modal-body form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.modal-body form input[type="date"],
+.modal-body form input[type="time"],
+.modal-body form select,
+.modal-body form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-body form .botoes-form {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.botoes-form button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-confirmar {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-cancelar-modal {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* --- CSS para Fieldset no Modal --- */
+.modal-body form fieldset {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+}
+
+.modal-body form legend {
+    font-weight: bold;
+    padding: 0 10px;
+    color: #333;
+}

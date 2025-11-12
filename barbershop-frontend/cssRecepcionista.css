@@ -1,0 +1,122 @@
+/* Estilos para /css/recepcionista.css */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    /* Fundo branco para legibilidade */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.colunas {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+}
+
+.coluna-principal {
+    flex: 2;
+    min-width: 300px; /* Largura mínima para conteúdo */
+}
+
+.coluna-lateral {
+    flex: 1;
+    min-width: 300px; /* Largura mínima para conteúdo */
+}
+
+.agenda-lista {
+    list-style-type: none;
+    padding: 0;
+}
+
+.agenda-item {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.agenda-item .horario {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-right: 15px;
+}
+
+.agenda-item .barbeiro {
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.pagamento-lista {
+    list-style-type: none;
+    padding: 0;
+}
+
+.pagamento-item {
+    background: #fffbeb;
+    border: 1px solid #f9e0a0;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.pagamento-item .cliente {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.pagamento-item .valor {
+    font-size: 1.1em;
+    color: #d9534f;
+    font-weight: bold;
+}
+
+.pagamento-item button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.pagamento-item button:hover {
+    background-color: #218838;
+}
+
+.feedback-lista {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.feedback-item {
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+}
+
+.feedback-item .cliente {
+    font-weight: bold;
+    color: #333;
+}
+
+.feedback-item .comentario {
+    margin-top: 5px;
+    font-style: italic;
+}

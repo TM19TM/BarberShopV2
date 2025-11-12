@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BarberShop</title>
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="./cssGlocal.css">
+    <!-- CSS Específico da Página -->
+    <link rel="stylesheet" href="./cssLogin.css">
+</head>
+<body>
+
+    <div class="login-container">
+
+        <!-- Formulário de Login (Padrão) -->
+        <form id="login-form">
+            <h1>Login</h1>
+            <div class="form-group">
+                <label for="email-login">E-mail ou Telefone</label>
+                <input type="text" id="email-login" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="senha-login">Senha</label>
+                <input type="password" id="senha-login" name="senha" required>
+            </div>
+            
+            <button type="submit" class="form-button">Entrar</button>
+            
+            <div class="form-links">
+                <a onclick="mostrarPainel('forgot-password-form')">Esqueci minha senha</a>
+                <br><br>
+                <span>Não tem conta? </span>
+                <a onclick="mostrarPainel('register-form')">Cadastre-se</a>
+            </div>
+        </form>
+
+        <!-- Formulário de Cadastro (Oculto) -->
+        <form id="register-form">
+            <h1>Cadastre-se</h1>
+            <div class="form-group">
+                <label for="nome-reg">Nome Completo</label>
+                <input type="text" id="nome-reg" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="telefone-reg">Telefone (WhatsApp)</label>
+                <input type="tel" id="telefone-reg" name="telefone" required>
+            </div>
+             <div class="form-group">
+                <label for="nasc-reg">Data de Nascimento</label>
+                <input type="date" id="nasc-reg" name="nascimento" required>
+            </div>
+            <div class="form-group">
+                <label for="email-reg">E-mail</label>
+                <input type="email" id="email-reg" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="senha-reg">Crie uma Senha</label>
+                <input type="password" id="senha-reg" name="senha" required>
+            </div>
+            
+            <button type="submit" class="form-button btn-register">Criar Conta</button>
+            
+            <div class="form-links">
+                <span>Já tem conta? </span>
+                <a onclick="mostrarPainel('login-form')">Faça o Login</a>
+            </div>
+        </form>
+
+        <!-- Formulário de Recuperação (Oculto) -->
+        <form id="forgot-password-form">
+            <h1>Recuperar Senha</h1>
+            <p style="text-align: center; color: #555;">Informe seu e-mail para enviarmos um link de recuperação.</p>
+            
+            <div class="form-group">
+                <label for="email-forgot">E-mail</label>
+                <input type="email" id="email-forgot" name="email" required>
+            </div>
+            
+            <button type="submit" class="form-button">Enviar Link</button>
+            
+            <div class="form-links">
+                <a onclick="mostrarPainel('login-form')">Voltar ao Login</a>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Script Específico da Página -->
+    <script src="./BarberLOGIN.html" defer></script>
+</body>
+</html>
