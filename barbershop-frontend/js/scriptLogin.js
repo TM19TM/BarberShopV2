@@ -1,7 +1,7 @@
 // Script para /js/scriptLogin.js
 
 // URL Base da API (ajuste se o backend estiver em outro lugar)
-const API_URL = 'https://barbershopv2.onrender.com';
+const API_URL = 'https://barbershopv2.onrender.com/api';
 
 function mostrarPainel(idDoPainel) {
     // Esconde todos os formulários

@@ -1,7 +1,7 @@
 // Script para /js/scriptBarbeiro.js
 
 // URL Base da API (ajuste se o backend estiver em outro lugar)
-const API_URL = 'https://barbershopv2.onrender.com';
+const API_URL = 'https://barbershopv2.onrender.com/api';
 
 // --- Função para o Barbeiro concluir o atendimento ---
 async function concluirAtendimento(agendamentoId) {
