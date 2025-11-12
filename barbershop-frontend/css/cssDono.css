@@ -1,95 +1,160 @@
-/* Estilos Específicos para /css/cssRecepcionista.css */
+/* Estilos Específicos para /css/cssDono.css */
 
-.colunas { 
-    display: grid; 
-    grid-template-columns: 2fr 1fr; /* Coluna principal 2x maior */
-    gap: 30px; 
+/* 1. O container principal dos relatórios (widgets) */
+.relatorios {
+    display: grid;
+    /* Cria 2 colunas de tamanho igual */
+    grid-template-columns: 1fr 1fr; 
+    gap: 30px;
 }
 
-/* Agenda (coluna principal) */
-.agenda-lista { list-style-type: none; padding: 0; }
-.agenda-item { 
-    background: rgba(0, 0, 0, 0.2); 
-    border: 1px solid #444; 
-    padding: 15px; 
-    margin-bottom: 10px; 
-    border-radius: 5px; 
+/* 2. Estilo de cada "caixinha" */
+.widget {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+    padding: 25px;
+    border-radius: 8px;
     transition: all 0.2s ease;
 }
-.agenda-item:hover {
+
+.widget:hover {
     border-color: #c69c6c;
+    transform: translateY(-5px);
 }
-.agenda-item .horario { 
-    font-weight: bold; 
-    font-size: 1.2em; 
-    margin-right: 15px; 
+
+.widget h2 {
+    font-size: 1.2em;
     color: #c69c6c;
-    font-family: 'Oswald', sans-serif;
-}
-.agenda-item .barbeiro { 
-    font-weight: bold; 
-    color: #007bff; /* Azul para diferenciar */
-}
-.agenda-item strong {
-    color: #fff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: none;
+    text-align: center;
 }
 
-/* Feedbacks (coluna principal) */
-.feedback-lista { list-style-type: none; padding: 0; margin-top: 30px; }
-.feedback-item { 
-    background: rgba(0, 0, 0, 0.1); 
-    border: 1px solid #333; 
-    padding: 12px; 
-    margin-bottom: 8px; 
-    border-radius: 5px; 
-}
-.feedback-item .cliente { 
-    font-weight: bold; 
-    color: #c69c6c; 
-    font-family: 'Oswald', sans-serif;
-}
-.feedback-item .comentario { margin-top: 5px; font-style: italic; color: #ccc;}
-
-/* Pagamentos (coluna lateral) */
-.coluna-lateral h2 {
-    color: #ffc107; /* Amarelo/Laranja */
-    border-color: #ffc107;
-}
-.pagamento-lista { list-style-type: none; padding: 0; }
-.pagamento-item { 
-    background: rgba(255, 193, 7, 0.05); 
-    border: 1px solid #ffc107; 
-    padding: 15px; 
-    margin-bottom: 10px; 
-    border-radius: 5px; 
-}
-.pagamento-item .cliente { 
-    font-weight: bold; 
-    font-size: 1.1em; 
+.widget .valor {
+    font-size: 2.5em;
+    font-weight: bold;
     color: #fff;
+    font-family: 'Oswald', sans-serif;
+    text-align: center;
+    margin-bottom: 10px;
 }
-.pagamento-item .valor { 
-    font-size: 1.1em; 
-    color: #d9534f; /* Vermelho para pendente */
-    font-weight: bold; 
+
+.widget p {
+    text-align: center;
+    color: #888;
+    margin-bottom: 0;
+    font-size: 0.9em;
 }
-.pagamento-item button { 
-    background-color: #28a745; 
-    color: white; 
-    border: none; 
-    padding: 8px 12px; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    margin-top: 10px;
+
+/* 3. Ajustes para widgets com tabelas (Performance e Feedbacks) */
+/* Faz com que esses widgets ocupem a largura inteira (as 2 colunas) */
+.widget:nth-child(3),
+.widget:nth-child(4) {
+    grid-column: 1 / -1; /* Ocupa do início ao fim */
+}
+
+.widget table {
+    width: 100%;
+    border-collapse: collapse; /* Tira espaço entre bordas */
+    margin-top: 15px;
+}
+
+.widget table th,
+.widget table td {
+    padding: 12px;
+    border-bottom: 1px solid #444;
+    text-align: left;
+    color: #ccc;
+}
+
+.widget table th {
+    color: #fff;
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
+    font-size: 0.9em;
+    background-color: rgba(0, 0, 0, 0.2);
 }
-.pagamento-item button:hover { background-color: #218838; }
 
+.widget table td strong {
+    color: #c69c6c;
+    font-weight: normal;
+}
 
-/* Responsividade */
+/* 4. Estilo dos Filtros */
+.filtros {
+    display: flex;
+    gap: 15px;
+    align-items: center; /* Isso alinha verticalmente os itens */
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    flex-wrap: wrap; 
+}
+
+.filtros label {
+    margin-bottom: 0;
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+/* --- ESTA É A PARTE NOVA --- */
+/* Aplicando os estilos da paleta e o padding */
+.filtros input[type="date"],
+.filtros select {
+    /* Estilos de cor/aparência (da paleta) */
+    padding: 12px 15px; /* O padding de 12px top/bottom vai alinhar com o botão */
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #555;
+    color: #fff; 
+    border-radius: 5px; 
+    font-family: 'Lato', sans-serif;
+    font-size: 1em;
+    transition: all 0.2s ease;
+    
+    /* Corrige a cor do texto "dd/mm/aaaa" em navegadores no modo escuro */
+    color-scheme: dark;
+
+    /* Estilos de tamanho */
+    width: auto; 
+    min-width: 150px;
+}
+
+/* Efeito de foco (hover/click) */
+.filtros input[type="date"]:focus,
+.filtros select:focus {
+    outline: none;
+    border-color: #c69c6c;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(198, 156, 108, 0.3);
+}
+
+.filtros button {
+    width: auto;
+    padding: 12px 25px; 
+    margin-top: 0;
+    background-color: #28a745; /* Verde do botão */
+    color: #fff;
+}
+.filtros button:hover {
+    background-color: #218838;
+}
+
 @media (max-width: 768px) {
-    .colunas {
-        grid-template-columns: 1fr; /* Empilha as colunas */
+    .relatorios {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros {
+        flex-direction: column;
+        align-items: stretch; 
+    }
+
+    .filtros input[type="date"],
+    .filtros select {
+        width: 100%; /* Ocupa 100% na vertical */
     }
 }
