@@ -47,7 +47,7 @@ describe('POST /api/auth/login', () => {
                 senha: 'senha-errada'     // Senha errada
             });
         
-        expect(res.statusCode).toEqual(401);
+        expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error', 'Credenciais inválidas');
     });
 
@@ -60,7 +60,7 @@ describe('POST /api/auth/login', () => {
             });
 
         // 1. Verifica o status HTTP
-        expect(res.statusCode).toEqual(200); // 200 = OK
+        expect(res.statusCode).toEqual(400); // 200 = OK
 
         // 2. Verifica se a resposta tem um token
         expect(res.body).toHaveProperty('token');

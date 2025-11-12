@@ -9,9 +9,6 @@ const connectDB = require('./config/db'); // Importa a conexão do DB
 const app = express();
 const PORT = process.env.PORT || 3000; // Usa a porta do .env ou 3000
 
-// --- Conexão com o Banco de Dados ---
-connectDB();
-
 // --- Middlewares Globais ---
 app.use(cors()); // Habilita o CORS
 app.use(express.json()); // Habilita o parsing de JSON
@@ -40,8 +37,10 @@ app.get('/', (req, res) => {
 // -_-_-_- Iniciar o Servidor -_-_-_-
 
 if (require.main === module) {
-    app.listen(PORT, () => {
+    connectDB().then(() => {
+        app.listen(PORT, () => {
         console.log(`Seu servidor Backend está rodando em http://localhost:${PORT} \n Tenha um ótimo dia :)`)
+        });
     });
 }
 
