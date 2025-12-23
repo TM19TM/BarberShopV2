@@ -78,11 +78,11 @@ function abrirModalRemarcar(agendamento) {
 // -_-_-_- FUNÇÕES AUXILIARES PARA FORMATAR DATA E HORA -_-_-_-
 function formatarData(dataISO) { 
     const data = new Date(dataISO);
-    return data.toLocaleDateString('pt-BR', {timeZone: 'UTC', weekday: 'long', day: '2-digit', month: '2-digit'});
+    return data.toLocaleDateString('pt-BR', {timeZone: 'America/Sao_Paulo', weekday: 'long', day: '2-digit', month: '2-digit'});
 }
 function formatarHora(dataISO) {
     const data = new Date(dataISO);
-    return data.toLocaleTimeString('pt-BR', {timeZone: 'UTC', hour: '2-digit', minute: '2-digit'});
+    return data.toLocaleTimeString('pt-BR', {timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit'});
 }
 
 // -_-_-_- FUNÇÃO PARA POPULAR OS DADOS -_-_-_-

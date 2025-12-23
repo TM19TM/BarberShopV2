@@ -10,7 +10,8 @@ exports.criarAgendamento = async (req, res) => {
     try {
         const { servico, barbeiro, dia, horario } = req.body;
         const clienteId = req.user.id;
-        const dataHoraAgendamento = new Date(dia + 'T' + horario);
+        const dataHoraString = `${dia}T${horario}:00.000-03:00`;
+        const dataHoraAgendamento = new Date(dataHoraString);
 
         const novoAgendamento = new Agendamento({
             cliente: clienteId,
@@ -65,8 +66,8 @@ exports.remarcarAgendamento = async (req, res) => {
             return res.status(403).json({ error: 'Você não tem permissão para alterar esse agendamento.' });
         }
 
-        const novaDataHora = new Date(dia + 'T' + horario);
-        agendamento.dataHora = novaDataHora;
+        const novaDataHoraString = `${dia}T${horario}:00.000-03:00`;
+        agendamento.dataHora = new Date(novaDataHoraString);
         agendamento.status = 'agendado';
 
         await agendamento.save();
@@ -98,10 +99,11 @@ exports.getMinhasNotificacoes = async (req, res) => {
         }
 
         const notificacoes = [];
-        const hoje = new Date();
+        const hojeString = new Date().toLocaleString("en-US", {timeZone: "America/Sao_Paulo"});
+        const hoje = new Date(hojeString);
         const aniversario = new Date(user.dataNascimento);
 
-        if (aniversario.getUTCMonth() === hoje.getUTCMonth() && aniversario.getUTCDate() === hoje.getUTCDate()) {
+        if (aniversario.getUTCMonth() === hoje.getMonth() && aniversario.getUTCDate() === hoje.getDate()) {
             notificacoes.push({
                 tipo: 'info',
                 mensagem: `<strong>Feliz Aniversário, ${user.nome}!</strong> Você ganhou <strong>10% de desconto</strong> no seu próximo corte como presente!`
