@@ -12,7 +12,7 @@ exports.criarAgendamento = async (req, res) => {
         const clienteId = req.user.id;
 
         // 1. Criar a string visual "Brasileira"
-        const dataVisual = new Date(dataHora).toLocaleString('pt-BR', {
+        const dataVisual = new Date(dataHora - 3).toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             dateStyle: 'short',
             timeStyle: 'short'
