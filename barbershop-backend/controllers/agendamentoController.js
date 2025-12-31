@@ -8,22 +8,29 @@ const User = require('../models/User');
 // --- ROTA PARA CRIAR UM NOVO AGENDAMENTO (CORRIGIDO) ---
 exports.criarAgendamento = async (req, res) => {
     try {
-        // CORREÇÃO: Agora recebemos 'dataHora' direto, em vez de 'dia' e 'horario'
         const { servico, barbeiro, dataHora } = req.body;
         const clienteId = req.user.id;
+
+        // 1. Criar a string visual "Brasileira"
+        const dataVisual = new Date(dataHora).toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            dateStyle: 'short',
+            timeStyle: 'short'
+        }); // Vai gerar algo como "31/12/2025, 19:00"
 
         const novoAgendamento = new Agendamento({
             cliente: clienteId,
             servico,
             barbeiro,
-            dataHora: dataHora // O MongoDB entende a string ISO automaticamente
+            dataHora: dataHora, // Salva 22:00 UTC (Correto para o sistema)
+            dataLocal: dataVisual // Salva "19:00" (Bom para seus olhos)
         });
 
         await novoAgendamento.save();
-        res.status(201).json({ message: 'Seu agendamento foi criado com sucesso! Nos vemos em breve :)' });
+        res.status(201).json({ message: 'Agendamento criado com sucesso!' });
     } catch (error) {
         console.error('Erro ao agendar:', error);
-        res.status(500).json({ error: 'Infelizmente ocorreu um erro no servidor. Tente novamente mais tarde.' });
+        res.status(500).json({ error: 'Erro no servidor.' });
     }
 };
 

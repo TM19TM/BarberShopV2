@@ -7,36 +7,23 @@ const AgendamentoSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    servico: {
-        type: String,
-        required: true
-    },
-    barbeiro: {
-        type: String,
-        required: true
-    },
-    // Este é o campo IMPORTANTE agora
-    dataHora: {
-        type: Date,
-        required: true
-    },
-    // Removemos a obrigatoriedade de 'dia' e 'horario' antigos se existiam
+    servico: { type: String, required: true },
+    barbeiro: { type: String, required: true },
+    
+    // O campo REAL (cálculos do sistema) - Mantemos UTC (22h)
+    dataHora: { type: Date, required: true },
+
+    // O campo VISUAL (para você ler no banco) - Salvará "19:00"
+    dataLocal: { type: String }, 
+
     status: {
         type: String,
         enum: ['agendado', 'concluido', 'cancelado'],
         default: 'agendado'
     },
-    valor: {
-        type: Number
-    },
-    feedbackEnviado: {
-        type: Boolean,
-        default: false
-    },
-    criadoEm: {
-        type: Date,
-        default: Date.now
-    }
+    valor: { type: Number },
+    feedbackEnviado: { type: Boolean, default: false },
+    criadoEm: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Agendamento', AgendamentoSchema);
