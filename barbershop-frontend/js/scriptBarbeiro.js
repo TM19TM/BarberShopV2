@@ -1,6 +1,8 @@
 // Script para /js/scriptBarbeiro.js
 
-// URL Base da API (ajuste se o backend estiver em outro lugar)
+// URL Base da API 
+// DICA: Se estiver na Vercel e o backend for junto, use apenas '/api'
+// Se o backend for separado (ex: Render), mantenha a URL completa abaixo.
 const API_URL = 'https://barbershopv2.onrender.com/api';
 
 // --- Função para o Barbeiro concluir o atendimento ---
@@ -20,7 +22,7 @@ async function concluirAtendimento(agendamentoId) {
     const token = localStorage.getItem('barberToken');
 
     try {
-        const response = await fetch(`${API_URL}/barbeiro/concluir/${agendamentoId}`, { // Rota atualizada
+        const response = await fetch(`${API_URL}/barbeiro/concluir/${agendamentoId}`, { 
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ async function adicionarWalkin() {
     const token = localStorage.getItem('barberToken');
 
     try {
-        const response = await fetch(`${API_URL}/barbeiro/walkin`, { // Rota atualizada
+        const response = await fetch(`${API_URL}/barbeiro/walkin`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,10 +88,15 @@ async function adicionarWalkin() {
     }
 }
 
-// --- Função para formatar a hora
+// --- Função para formatar a hora (CORRIGIDA) ---
 function formatarHora(dataISO) {
     const data = new Date(dataISO);
-    return data.toLocaleTimeString('pt-BR', {timeZone: 'UTC', hour: '2-digit', minute: '2-digit'});
+    // CORREÇÃO AQUI: Mudado de 'UTC' para 'America/Sao_Paulo'
+    return data.toLocaleTimeString('pt-BR', {
+        timeZone: 'America/Sao_Paulo', 
+        hour: '2-digit', 
+        minute: '2-digit'
+    });
 }
 
 // --- Função para preencher a agenda no HTML ---
@@ -167,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const headers = { 'Authorization': 'Bearer ' + token };
 
         // 1. Requisição Agenda
-        const response = await fetch(`${API_URL}/barbeiro/agenda`, { headers }); // Rota atualizada
+        const response = await fetch(`${API_URL}/barbeiro/agenda`, { headers }); 
         if (!response.ok) {
             const err = await response.json();
             throw new Error(err.error || 'Não foi possivel carregar sua agenda');
@@ -176,13 +183,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         popularAgenda(agenda);    
         
         // 2. Requisição Feedbacks
-        const responseFeedback = await fetch(`${API_URL}/barbeiro/feedbacks`, { headers }); // Rota atualizada
+        const responseFeedback = await fetch(`${API_URL}/barbeiro/feedbacks`, { headers }); 
         if (!responseFeedback.ok) throw new Error('Erro ao carregar feedbacks');
         const feedbacks = await responseFeedback.json();
         popularFeedbacks(feedbacks);
 
         // 3. Requisição Estatística
-        const responseStats = await fetch(`${API_URL}/barbeiro/estatisticas`, { headers }); // Rota atualizada
+        const responseStats = await fetch(`${API_URL}/barbeiro/estatisticas`, { headers }); 
         if (responseStats.ok) {
             const stats = await responseStats.json()
             document.getElementById('contador-hoje').textContent = stats.totalConcluidos;
@@ -197,6 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             localStorage.clear();
             window.location.href = 'BarberLOGIN.html';
         } else {
+            // Tratamento de erros visuais na interface
             if (error.message.includes('agenda')) {
                 document.querySelector('.agenda-lista').innerHTML = `<li class="agenda-item"><span class="info" style="color: red;">Erro ao carregar agenda.</span></li>`;
             }
