@@ -1,8 +1,6 @@
 // Script para /js/scriptBarbeiro.js
 
 // URL Base da API 
-// DICA: Se estiver na Vercel e o backend for junto, use apenas '/api'
-// Se o backend for separado (ex: Render), mantenha a URL completa abaixo.
 const API_URL = 'https://barbershopv2.onrender.com/api';
 
 // --- Função para o Barbeiro concluir o atendimento ---
@@ -88,11 +86,11 @@ async function adicionarWalkin() {
     }
 }
 
-// --- Função para formatar a hora (CORRIGIDA) ---
+// --- Função para formatar a hora (CORRIGIDA -3H MANUAL) ---
 function formatarHora(dataISO) {
     const data = new Date(dataISO);
+    data.setHours(data.getHours() - 3); // Subtrai 3 horas manualmente para corrigir o visual
     return data.toLocaleTimeString('pt-BR', {
-        timeZone: 'America/Sao_Paulo', // Força o horário de Brasília
         hour: '2-digit', 
         minute: '2-digit'
     });
