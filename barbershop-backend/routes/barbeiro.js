@@ -1,38 +1,32 @@
-// -_-_-_- /routes/agendamentos.js -_-_-_-
-// Define as URLs para as ações do cliente
+// -_-_-_- /routes/barbeiro.js -_-_-_-
+// Define as URLs para as ações do painel do barbeiro
 
 const express = require('express');
 const router = express.Router();
-const { verificarToken } = require('../middleware/auth');
+const { verificarToken } = require('../middleware/auth'); // Middleware para garantir que está logado
 const {
-    criarAgendamento,
-    cancelarAgendamento,
-    remarcarAgendamento,
-    getMeusAgendamentos,
-    getMinhasNotificacoes,
-    deixarFeedback,
-    getBarbeiros
-} = require('../controllers/agendamentoController');
+    getMinhaAgenda,
+    getMeusFeedbacks,
+    concluirAtendimento,
+    addWalkin,
+    getEstatisticas
+} = require('../controllers/barbeiroController'); // Importa o controlador CORRETO
 
-// Todas as rotas aqui são protegidas pelo 'verificarToken'
+// Todas as rotas aqui são prefixadas com /api/barbeiro (definido no server.js)
 
-// /api/agendamentos/
-router.post('/', verificarToken, criarAgendamento);
+// GET /api/barbeiro/agenda -> Busca os agendamentos de hoje
+router.get('/agenda', verificarToken, getMinhaAgenda);
 
-// /api/agendamentos/meus
-router.get('/meus', verificarToken, getMeusAgendamentos);
+// GET /api/barbeiro/feedbacks -> Busca os feedbacks recentes
+router.get('/feedbacks', verificarToken, getMeusFeedbacks);
 
-// /api/agendamentos/notificacoes
-router.get('/notificacoes', verificarToken, getMinhasNotificacoes);
+// GET /api/barbeiro/estatisticas -> Busca contagem de cortes
+router.get('/estatisticas', verificarToken, getEstatisticas);
 
-// /api/agendamentos/feedback
-router.post('/feedback', verificarToken, deixarFeedback);
+// POST /api/barbeiro/walkin -> Adiciona um cliente que veio sem marcar
+router.post('/walkin', verificarToken, addWalkin);
 
-// /api/agendamentos/barbeiros
-router.get('/barbeiros', verificarToken, getBarbeiros);
-
-// /api/agendamentos/:id (DELETE e PUT)
-router.delete('/:id', verificarToken, cancelarAgendamento);
-router.put('/:id', verificarToken, remarcarAgendamento);
+// PUT /api/barbeiro/concluir/:id -> Marca um atendimento como concluído
+router.put('/concluir/:id', verificarToken, concluirAtendimento);
 
 module.exports = router;
