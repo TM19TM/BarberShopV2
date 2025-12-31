@@ -5,7 +5,7 @@ const API_URL = 'https://barbershopv2.onrender.com/api';
 
 // --- Função para o Barbeiro concluir o atendimento ---
 async function concluirAtendimento(agendamentoId) {
-    const valorInput = prompt("Qual o valor final o serviço? (Ex: 50)");
+    const valorInput = prompt("Qual o valor final do serviço? (Ex: 50)");
     if (!valorInput) {
         alert('Cancelado.');
         return;
@@ -13,7 +13,7 @@ async function concluirAtendimento(agendamentoId) {
 
     const valor = parseFloat(valorInput);
     if (isNaN(valor) || valor < 0) {
-        alert('Valor inválido. por favor digite apenas números.');
+        alert('Valor inválido. Por favor digite apenas números.');
         return;
     }
 
@@ -86,26 +86,56 @@ async function adicionarWalkin() {
     }
 }
 
-// --- Função para formatar a hora (CORREÇÃO FINAL) ---
-function formatarHora(dataISO) {
-    const data = new Date(dataISO);
+// --- Função para obter a hora formatada CORRETA ---
+function obterHoraFormatada(agendamento) {
+    console.log('DEBUG obterHoraFormatada - objeto:', agendamento);
     
-    // Converter UTC para horário local (UTC-3)
-    // Subtrair 3 horas (3 * 60 * 60 * 1000 = 10800000 ms)
-    const dataLocal = new Date(data.getTime() - (3 * 60 * 60000));
+    // 1. PRIMEIRA OPÇÃO: Se já tiver horaDisplay formatada do backend, use ela
+    if (agendamento.horaDisplay) {
+        console.log('Usando horaDisplay do backend:', agendamento.horaDisplay);
+        return agendamento.horaDisplay;
+    }
     
-    return dataLocal.toLocaleTimeString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false
-    });
+    // 2. SEGUNDA OPÇÃO: Se tiver dataHoraLocal, formate ela
+    if (agendamento.dataHoraLocal) {
+        const dataLocal = new Date(agendamento.dataHoraLocal);
+        const horaFormatada = dataLocal.toLocaleTimeString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false
+        });
+        console.log('Formatando dataHoraLocal:', horaFormatada);
+        return horaFormatada;
+    }
+    
+    // 3. TERCEIRA OPÇÃO: Converter manualmente de UTC para São Paulo (-3 horas)
+    if (agendamento.dataHora) {
+        const dataUTC = new Date(agendamento.dataHora);
+        // Subtrair 3 horas para converter UTC para horário de São Paulo
+        dataUTC.setHours(dataUTC.getHours() - 3);
+        
+        const horas = dataUTC.getHours().toString().padStart(2, '0');
+        const minutos = dataUTC.getMinutes().toString().padStart(2, '0');
+        
+        const horaManual = `${horas}:${minutos}`;
+        console.log('Conversão manual UTC->SP:', {
+            entrada: agendamento.dataHora,
+            saida: horaManual
+        });
+        return horaManual;
+    }
+    
+    console.warn('Nenhuma informação de hora disponível:', agendamento);
+    return '--:--';
 }
 
 // --- Função para preencher a agenda no HTML ---
 function popularAgenda(agendamentos) {
     const listaContainer = document.querySelector('.agenda-lista');
     listaContainer.innerHTML = '';
+
+    console.log('DEBUG popularAgenda - dados recebidos:', agendamentos);
 
     if (agendamentos.length === 0) {
         listaContainer.innerHTML = '<li class="agenda-item"><span class="info">Você não tem clientes agendados para hoje.</span></li>';
@@ -114,10 +144,22 @@ function popularAgenda(agendamentos) {
 
     agendamentos.forEach(ag => {
         const nomeCliente = ag.cliente ? ag.cliente.nome : 'Cliente Removido';
+        
+        // Use a função corrigida para obter a hora
+        const horaFormatada = obterHoraFormatada(ag);
+        
+        console.log('DEBUG - Item da agenda:', {
+            cliente: nomeCliente,
+            horaDisplay: ag.horaDisplay,
+            dataHora: ag.dataHora,
+            dataHoraLocal: ag.dataHoraLocal,
+            horaFormatadaFinal: horaFormatada
+        });
+        
         const itemHtml = `
         <li class="agenda-item">
             <div>
-                <span class="horario">${formatarHora(ag.dataHora)}</span>
+                <span class="horario">${horaFormatada}</span>
                 <span class="info">Cliente: <strong>${nomeCliente}</strong> - (Serviço: ${ag.servico})</span>
             </div>
             <button onclick="concluirAtendimento('${ag._id}')">Concluir Atendimento</button>
@@ -177,21 +219,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         const headers = { 'Authorization': 'Bearer ' + token };
 
         // 1. Requisição Agenda
+        console.log('Fazendo requisição para agenda...');
         const response = await fetch(`${API_URL}/barbeiro/agenda`, { headers }); 
         if (!response.ok) {
             const err = await response.json();
             throw new Error(err.error || 'Não foi possivel carregar sua agenda');
         }
         const agenda = await response.json();
+        console.log('Agenda recebida:', agenda);
         popularAgenda(agenda);    
         
         // 2. Requisição Feedbacks
+        console.log('Fazendo requisição para feedbacks...');
         const responseFeedback = await fetch(`${API_URL}/barbeiro/feedbacks`, { headers }); 
         if (!responseFeedback.ok) throw new Error('Erro ao carregar feedbacks');
         const feedbacks = await responseFeedback.json();
         popularFeedbacks(feedbacks);
 
         // 3. Requisição Estatística
+        console.log('Fazendo requisição para estatísticas...');
         const responseStats = await fetch(`${API_URL}/barbeiro/estatisticas`, { headers }); 
         if (responseStats.ok) {
             const stats = await responseStats.json()
@@ -217,3 +263,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+// --- Função de teste para verificar dados ---
+async function testeDadosAgenda() {
+    const token = localStorage.getItem('barberToken');
+    if (!token) {
+        console.log('Token não encontrado');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/barbeiro/agenda`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await response.json();
+        console.log('TESTE - Dados completos da agenda:', JSON.stringify(data, null, 2));
+        
+        if (data.length > 0) {
+            console.log('TESTE - Primeiro agendamento detalhado:', {
+                dataHora: data[0].dataHora,
+                dataHoraLocal: data[0].dataHoraLocal,
+                horaDisplay: data[0].horaDisplay,
+                cliente: data[0].cliente?.nome
+            });
+        }
+    } catch (error) {
+        console.error('TESTE - Erro:', error);
+    }
+}
+
+// Para testar, execute no console: testeDadosAgenda()

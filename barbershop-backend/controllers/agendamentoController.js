@@ -9,12 +9,18 @@ const User = require('../models/User');
 function converterLocalParaUTC(dataLocal) {
     // Se o usuário seleciona 20:00 em São Paulo (UTC-3), 
     // precisamos adicionar 3 horas para armazenar como UTC
-    return new Date(dataLocal.getTime() + (3 * 60 * 60000));
+    // Exemplo: 20:00 (São Paulo) -> 23:00 UTC
+    const dataUTC = new Date(dataLocal);
+    dataUTC.setHours(dataUTC.getHours() + 3);
+    return dataUTC;
 }
 
 function converterUTCparaLocal(dataUTC) {
     // Para mostrar ao usuário: UTC - 3 horas
-    return new Date(dataUTC.getTime() - (3 * 60 * 60000));
+    // Exemplo: 23:00 UTC -> 20:00 (São Paulo)
+    const dataLocal = new Date(dataUTC);
+    dataLocal.setHours(dataLocal.getHours() - 3);
+    return dataLocal;
 }
 
 // --- ROTA PARA CRIAR UM NOVO AGENDAMENTO (CORRIGIDO DEFINITIVO) ---
@@ -55,7 +61,7 @@ exports.criarAgendamento = async (req, res) => {
             cliente: clienteId,
             servico,
             barbeiro,
-            dataHora: dataHoraUTC, // Salva como UTC+0 no banco
+            dataHora: dataHoraUTC, // Salva como UTC+0 no banco (23:00 para 20:00 local)
             dataLocal: dataVisual // Salva string formatada para exibição
         });
 
@@ -193,37 +199,63 @@ exports.getMeusAgendamentos = async (req, res) => {
 exports.getAgendamentosBarbeiro = async (req, res) => {
     try {
         const barbeiroNome = req.user.nome;
+        
+        // Data atual em UTC-3 (São Paulo)
         const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
+        const hojeSP = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+        hojeSP.setHours(0, 0, 0, 0);
         
-        // Converter o início do dia para UTC para comparação
-        const hojeUTC = converterLocalParaUTC(hoje);
+        // Converter início do dia para UTC
+        const hojeInicioUTC = converterLocalParaUTC(hojeSP);
         
-        // Buscar agendamentos futuros e de hoje
+        // Buscar agendamentos do dia atual (UTC)
         const agendamentos = await Agendamento.find({ 
             barbeiro: barbeiroNome,
-            dataHora: { $gte: hojeUTC },
+            dataHora: { $gte: hojeInicioUTC },
             status: 'agendado'
         }).populate('cliente', 'nome').sort({ dataHora: 1 });
         
-        // Converter para horário local para exibição
+        // Converter para horário local e formatar
         const agendamentosConvertidos = agendamentos.map(agendamento => {
             const dataHoraUTC = new Date(agendamento.dataHora);
             const dataHoraLocal = converterUTCparaLocal(dataHoraUTC);
-    
-            return {
-                _id: agendamento._id,
-                cliente: agendamento.cliente,
-                servico: agendamento.servico,
-                dataHora: dataHoraUTC, // Mantém UTC para compatibilidade
-                dataHoraLocal: dataHoraLocal, // <-- JÁ TEM A HORA LOCAL AQUI!
-                horaDisplay: dataHoraLocal.toLocaleTimeString('pt-BR', {
-                    timeZone: 'America/Sao_Paulo',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                })
-            };
+            
+            // Verificar se é hoje (comparação em UTC-3)
+            const hojeSP = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+            hojeSP.setHours(0, 0, 0, 0);
+            const dataAgendamentoSP = new Date(dataHoraLocal);
+            dataAgendamentoSP.setHours(0, 0, 0, 0);
+            
+            // Só retornar agendamentos de hoje
+            if (dataAgendamentoSP.getTime() === hojeSP.getTime()) {
+                return {
+                    _id: agendamento._id,
+                    cliente: agendamento.cliente,
+                    servico: agendamento.servico,
+                    dataHora: dataHoraUTC, // Mantém UTC para compatibilidade
+                    dataHoraLocal: dataHoraLocal, // Hora local para cálculos
+                    horaDisplay: dataHoraLocal.toLocaleTimeString('pt-BR', {
+                        timeZone: 'America/Sao_Paulo',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    })
+                };
+            }
+            return null;
+        }).filter(item => item !== null); // Remove itens não de hoje
+        
+        console.log('DEBUG - Agendamentos barbeiro:', {
+            barbeiro: barbeiroNome,
+            hojeInicioUTC: hojeInicioUTC.toISOString(),
+            totalEncontrados: agendamentos.length,
+            totalHoje: agendamentosConvertidos.length,
+            agendamentos: agendamentosConvertidos.map(a => ({
+                cliente: a.cliente.nome,
+                horaUTC: a.dataHora.toISOString(),
+                horaLocal: a.dataHoraLocal.toISOString(),
+                horaDisplay: a.horaDisplay
+            }))
         });
         
         res.status(200).json(agendamentosConvertidos);

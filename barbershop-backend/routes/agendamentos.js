@@ -12,7 +12,7 @@ const {
     getMinhasNotificacoes,
     deixarFeedback,
     getBarbeiros,
-    getAgendamentosBarbeiro
+    getAgendamentosBarbeiro 
 } = require('../controllers/agendamentoController');
 
 // Todas as rotas aqui são protegidas pelo 'verificarToken'
@@ -36,6 +36,7 @@ router.get('/barbeiros', verificarToken, getBarbeiros);
 router.delete('/:id', verificarToken, cancelarAgendamento);
 router.put('/:id', verificarToken, remarcarAgendamento);
 
+// NOVA ROTA PARA O BARBEIRO VER SUA AGENDA
 router.get('/barbeiro/agenda', verificarToken, getAgendamentosBarbeiro);
 
 module.exports = router;
