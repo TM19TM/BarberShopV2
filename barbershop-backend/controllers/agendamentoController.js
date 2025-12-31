@@ -210,15 +210,18 @@ exports.getAgendamentosBarbeiro = async (req, res) => {
         const agendamentosConvertidos = agendamentos.map(agendamento => {
             const dataHoraUTC = new Date(agendamento.dataHora);
             const dataHoraLocal = converterUTCparaLocal(dataHoraUTC);
-            
+    
             return {
-                ...agendamento._doc,
-                dataHoraLocal: dataHoraLocal,
+                _id: agendamento._id,
+                cliente: agendamento.cliente,
+                servico: agendamento.servico,
+                dataHora: dataHoraUTC, // Mantém UTC para compatibilidade
+                dataHoraLocal: dataHoraLocal, // <-- JÁ TEM A HORA LOCAL AQUI!
                 horaDisplay: dataHoraLocal.toLocaleTimeString('pt-BR', {
+                    timeZone: 'America/Sao_Paulo',
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: false,
-                    timeZone: 'America/Sao_Paulo'
+                    hour12: false
                 })
             };
         });
