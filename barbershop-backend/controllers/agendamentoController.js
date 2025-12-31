@@ -5,19 +5,18 @@ const Agendamento = require('../models/Agendamento');
 const Feedback = require('../models/Feedback');
 const User = require('../models/User');
 
-// --- ROTA PARA CRIAR UM NOVO AGENDAMENTO ---
+// --- ROTA PARA CRIAR UM NOVO AGENDAMENTO (CORRIGIDO) ---
 exports.criarAgendamento = async (req, res) => {
     try {
-        const { servico, barbeiro, dia, horario } = req.body;
+        // CORREÇÃO: Agora recebemos 'dataHora' direto, em vez de 'dia' e 'horario'
+        const { servico, barbeiro, dataHora } = req.body;
         const clienteId = req.user.id;
-        const dataHoraString = `${dia}T${horario}:00.000-03:00`;
-        const dataHoraAgendamento = new Date(dataHoraString);
 
         const novoAgendamento = new Agendamento({
             cliente: clienteId,
             servico,
             barbeiro,
-            dataHora: dataHoraAgendamento
+            dataHora: dataHora // O MongoDB entende a string ISO automaticamente
         });
 
         await novoAgendamento.save();
@@ -50,12 +49,14 @@ exports.cancelarAgendamento = async (req, res) => {
     }
 };
 
-// --- ROTA PARA ATUALIZAR/REMARCAR UM AGENDAMENTO ---
+// --- ROTA PARA ATUALIZAR/REMARCAR UM AGENDAMENTO (CORRIGIDO) ---
 exports.remarcarAgendamento = async (req, res) => {
     try {
         const clienteId = req.user.id;
         const agendamentoId = req.params.id;
-        const { dia, horario } = req.body;
+        
+        // CORREÇÃO: Recebemos apenas 'dataHora'
+        const { dataHora } = req.body;
 
         const agendamento = await Agendamento.findById(agendamentoId);
 
@@ -66,8 +67,8 @@ exports.remarcarAgendamento = async (req, res) => {
             return res.status(403).json({ error: 'Você não tem permissão para alterar esse agendamento.' });
         }
 
-        const novaDataHoraString = `${dia}T${horario}:00.000-03:00`;
-        agendamento.dataHora = new Date(novaDataHoraString);
+        // Atualiza direto com a data ISO que veio do frontend
+        agendamento.dataHora = dataHora;
         agendamento.status = 'agendado';
 
         await agendamento.save();
