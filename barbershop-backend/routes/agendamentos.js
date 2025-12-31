@@ -11,7 +11,7 @@ const {
     getMeusAgendamentos,
     getMinhasNotificacoes,
     deixarFeedback,
-    getBarbeiros
+    getBarbeiros,
     getAgendamentosBarbeiro
 } = require('../controllers/agendamentoController');
 
