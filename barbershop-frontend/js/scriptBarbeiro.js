@@ -91,9 +91,8 @@ async function adicionarWalkin() {
 // --- Função para formatar a hora (CORRIGIDA) ---
 function formatarHora(dataISO) {
     const data = new Date(dataISO);
-    // CORREÇÃO AQUI: Mudado de 'UTC' para 'America/Sao_Paulo'
     return data.toLocaleTimeString('pt-BR', {
-        timeZone: 'America/Sao_Paulo', 
+        timeZone: 'America/Sao_Paulo', // Força o horário de Brasília
         hour: '2-digit', 
         minute: '2-digit'
     });

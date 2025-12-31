@@ -32,7 +32,7 @@ async function enviarFeedback(agendamentoId, barbeiroNome) {
     const dadosFeedback = {agendamentoId, barbeiroNome, comentario};
 
     try {
-        const response = await fetch(`${API_URL}/agendamentos/feedback`, { // Rota atualizada
+        const response = await fetch(`${API_URL}/agendamentos/feedback`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -44,10 +44,10 @@ async function enviarFeedback(agendamentoId, barbeiroNome) {
         const result = await response.json();
 
         if (response.ok) {
-            alert(result.message); //Feedback enviado com sucesso!
-            window.location.reload(); // Recarrega a página
+            alert(result.message); 
+            window.location.reload(); 
         } else {
-            alert('Erro: ' + result.error); // Erro ao enviar feedback ou Feedback já enviado anteriormente
+            alert('Erro: ' + result.error); 
         }
     } catch (error) {
         console.error('Erro ao enviar feedback', error);
@@ -61,21 +61,22 @@ let idParaRemarcar = null;
 
 // --- FUNÇÃO PARA ABRIR O MODAL E DESMARCAR ---
 function abrirModalDesmarcar(agendamentoId) {
-    idParaCancelar = agendamentoId; // Guarda o ID do agendamento
-    abrirModal('modalDesmarcar'); // Abre o modal
+    idParaCancelar = agendamentoId; 
+    abrirModal('modalDesmarcar'); 
 }
 
 // --- FUNÇÃO PARA ABRIR O MODAL E REMARCAR ---
 function abrirModalRemarcar(agendamento) {
-    idParaRemarcar = agendamento._id; // Guarda o ID do agendamento
+    idParaRemarcar = agendamento._id; 
 
     const textoModal = document.getElementById('remarcar-texto-atual');
     textoModal.innerHTML = `Seu agendamento atual é: <strong>${formatarData(agendamento.dataHora)}</strong> às <strong>${formatarHora(agendamento.dataHora)}</strong>`;
 
-    abrirModal('modalRemarcar'); // Abre o modal')
+    abrirModal('modalRemarcar'); 
 }
 
 // -_-_-_- FUNÇÕES AUXILIARES PARA FORMATAR DATA E HORA -_-_-_-
+// Garante que o cliente veja o horário no fuso do Brasil, independente de onde o servidor esteja
 function formatarData(dataISO) { 
     const data = new Date(dataISO);
     return data.toLocaleDateString('pt-BR', {timeZone: 'America/Sao_Paulo', weekday: 'long', day: '2-digit', month: '2-digit'});
@@ -90,13 +91,12 @@ function formatarHora(dataISO) {
 // --- Função para popular a seleção de barbeiros
 function popularDropdownBarbeiros(barbeiros) {
     const selectBarbeiro = document.getElementById('barbeiro');
-    // Limpa opções antigas, exceto a primeira (se houver)
     selectBarbeiro.innerHTML = '<option value="">Qualquer um</option>';
 
     barbeiros.forEach(barbeiro => {
         const option = document.createElement('option');
-        option.value = barbeiro.nome; // Colocamos o nome do barbeiro
-        option.textContent = barbeiro.nome; // Exibimos o nome do barbeiro
+        option.value = barbeiro.nome; 
+        option.textContent = barbeiro.nome; 
         selectBarbeiro.appendChild(option);
     });
 }
@@ -104,11 +104,11 @@ function popularDropdownBarbeiros(barbeiros) {
 // Preenche a área de notificações
 function popularNotificacoes(notificacoes) {
     const containerNotificacoes = document.querySelector('.notificacoes-area');
-    containerNotificacoes.innerHTML = ''; //Limpa a área
+    containerNotificacoes.innerHTML = ''; 
 
     notificacoes.forEach(notif => {
         const divAlerta = document.createElement('div');
-        divAlerta.className = `alerta ${notif.tipo}`; // exemplo - "alerta info"
+        divAlerta.className = `alerta ${notif.tipo}`; 
         divAlerta.innerHTML = notif.mensagem;
         containerNotificacoes.appendChild(divAlerta);
     });
@@ -119,6 +119,7 @@ function popularDashboard(agendamentos) {
     const agora = new Date();
     const containerProximo = document.querySelector('.proximo-corte');
 
+    // Filtra apenas agendamentos futuros
     const proximo = agendamentos.find(ag =>
         new Date(ag.dataHora) > agora && ag.status === 'agendado'
     );
@@ -193,7 +194,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('barberToken');
     const nomeCliente = localStorage.getItem('barberUserNome');
 
-    // nav.js já cuida da verificação de token, mas checamos de novo
     if (!token) {
         console.error("cliente.js: Token não encontrado, aguardando redirecionamento do nav.js");
         return;
@@ -220,16 +220,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const resNotificacoes = await fetch(`${API_URL}/agendamentos/notificacoes`, { headers });
         if (resNotificacoes.ok) {
             popularNotificacoes(await resNotificacoes.json());
-        } else {
-            console.error('Não foi possivel buscar as notificações.');
         }
 
         // 3. Buscar Barbeiros
         const resBarbeiros = await fetch(`${API_URL}/agendamentos/barbeiros`, { headers });
         if (resBarbeiros.ok) {
             popularDropdownBarbeiros(await resBarbeiros.json());
-        } else {
-            console.error('Não foi possivel buscar a lista de barbeiros.');
         }
 
     } catch (error) {
@@ -252,11 +248,23 @@ formAgendamento.addEventListener('submit', async function(event) {
     const dia = document.getElementById('dia').value;
     const horario = document.getElementById('horario').value;
 
+    if (!dia || !horario) {
+        alert("Por favor, selecione dia e horário.");
+        return;
+    }
+
+    // Cria a data usando o fuso do navegador (Brasil) e converte para ISO (UTC)
+    // Isso garante que 18:00 seja enviado como o horário UTC correspondente (ex: 21:00)
+    const dataLocal = new Date(`${dia}T${horario}`);
+    const dataHoraISO = dataLocal.toISOString();
+
     const token = localStorage.getItem('barberToken');
-    const dadosAgendamento = {servico, barbeiro, dia, horario};
+    
+    // Enviamos 'dataHora' completo, em vez de dia e horario separados
+    const dadosAgendamento = { servico, barbeiro, dataHora: dataHoraISO };
     
     try {
-        const response = await fetch(`${API_URL}/agendamentos`, { // Rota atualizada
+        const response = await fetch(`${API_URL}/agendamentos`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -321,10 +329,19 @@ formRemarcar.addEventListener('submit', async function(event) {
     const dia = document.getElementById('nova-data').value;
     const horario = document.getElementById('novo-horario').value;
 
+    if (!dia || !horario) {
+        alert("Selecione a nova data e horário.");
+        return;
+    }
+
     if (!idParaRemarcar) {
         alert('Erro: ID do agendamento não encontrado.');
         return;
     }
+
+    const dataLocal = new Date(`${dia}T${horario}`);
+    const dataHoraISO = dataLocal.toISOString();
+
     const token = localStorage.getItem('barberToken');
 
     try {
@@ -334,7 +351,8 @@ formRemarcar.addEventListener('submit', async function(event) {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
             },
-            body: JSON.stringify({dia: dia, horario: horario}) 
+            // Enviamos apenas o dataHora atualizado
+            body: JSON.stringify({ dataHora: dataHoraISO }) 
         });
 
         const result = await response.json();
