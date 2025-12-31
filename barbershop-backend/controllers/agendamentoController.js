@@ -5,27 +5,51 @@ const Agendamento = require('../models/Agendamento');
 const Feedback = require('../models/Feedback');
 const User = require('../models/User');
 
-// --- ROTA PARA CRIAR UM NOVO AGENDAMENTO (CORRIGIDO) ---
+// --- FUNÇÕES AUXILIARES DE CONVERSÃO ---
+function converterLocalParaUTC(dataLocal) {
+    // Se o usuário seleciona 20:00 em São Paulo (UTC-3), 
+    // precisamos adicionar 3 horas para armazenar como UTC
+    return new Date(dataLocal.getTime() + (3 * 60 * 60000));
+}
+
+function converterUTCparaLocal(dataUTC) {
+    // Para mostrar ao usuário: UTC - 3 horas
+    return new Date(dataUTC.getTime() - (3 * 60 * 60000));
+}
+
+// --- ROTA PARA CRIAR UM NOVO AGENDAMENTO (CORRIGIDO DEFINITIVO) ---
 exports.criarAgendamento = async (req, res) => {
     try {
         const { servico, barbeiro, dataHora } = req.body;
         const clienteId = req.user.id;
 
-        // 1. Converter o horário local (UTC-3) para UTC+0
-        const dataHoraLocal = new Date(dataHora); // Data recebida do frontend (já em UTC-3)
+        console.log('DEBUG - Recebido do frontend:', {
+            dataHoraRecebida: dataHora,
+            momentoRecebimento: new Date().toISOString()
+        });
+
+        // 1. A data recebida do frontend está em UTC-3 (horário do usuário)
+        const dataHoraLocal = new Date(dataHora);
         
-        // Converter para UTC para armazenar no banco
-        const dataHoraUTC = new Date(dataHoraLocal.getTime() + (dataHoraLocal.getTimezoneOffset() * 60000));
+        // 2. Converter para UTC para armazenar no banco
+        const dataHoraUTC = converterLocalParaUTC(dataHoraLocal);
         
-        // 2. Criar a string visual "Brasileira" - corrigida
-        const dataVisual = new Date(dataHoraLocal).toLocaleString('pt-BR', {
+        // 3. Criar a string visual formatada
+        const dataVisual = dataHoraLocal.toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
-        }); // Vai gerar algo como "31/12/2025, 19:00"
+            minute: '2-digit',
+            hour12: false
+        }).replace(',', ' às ');
+
+        console.log('DEBUG - Conversões:', {
+            dataHoraLocal: dataHoraLocal.toISOString(),
+            dataHoraUTC: dataHoraUTC.toISOString(),
+            dataVisual
+        });
 
         const novoAgendamento = new Agendamento({
             cliente: clienteId,
@@ -38,10 +62,7 @@ exports.criarAgendamento = async (req, res) => {
         await novoAgendamento.save();
         res.status(201).json({ 
             message: 'Agendamento criado com sucesso!',
-            agendamento: {
-                ...novoAgendamento._doc,
-                dataHoraLocal: dataHoraLocal // Para referência
-            }
+            agendamento: novoAgendamento
         });
     } catch (error) {
         console.error('Erro ao agendar:', error);
@@ -77,7 +98,6 @@ exports.remarcarAgendamento = async (req, res) => {
         const clienteId = req.user.id;
         const agendamentoId = req.params.id;
         
-        // Recebemos apenas 'dataHora' do frontend (em UTC-3)
         const { dataHora } = req.body;
 
         const agendamento = await Agendamento.findById(agendamentoId);
@@ -89,28 +109,29 @@ exports.remarcarAgendamento = async (req, res) => {
             return res.status(403).json({ error: 'Você não tem permissão para alterar esse agendamento.' });
         }
 
-        // Converter o horário local (UTC-3) para UTC+0
+        // Converter para UTC
         const dataHoraLocal = new Date(dataHora);
-        const dataHoraUTC = new Date(dataHoraLocal.getTime() + (dataHoraLocal.getTimezoneOffset() * 60000));
+        const dataHoraUTC = converterLocalParaUTC(dataHoraLocal);
 
         // Atualizar com a data convertida para UTC
         agendamento.dataHora = dataHoraUTC;
         agendamento.status = 'agendado';
 
         // Atualizar também a string visual
-        agendamento.dataLocal = new Date(dataHoraLocal).toLocaleString('pt-BR', {
+        agendamento.dataLocal = dataHoraLocal.toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
-        });
+            minute: '2-digit',
+            hour12: false
+        }).replace(',', ' às ');
 
         await agendamento.save();
         res.status(200).json({ 
             message: 'Agendamento remarcado com sucesso! Nos vemos em breve :)',
-            dataHora: dataHoraUTC
+            agendamento
         });
     } catch (error) {
         console.error('Erro ao remarcar agendamento: ', error);
@@ -127,18 +148,36 @@ exports.getMeusAgendamentos = async (req, res) => {
         // Converter horários UTC do banco para horário local (UTC-3)
         const agendamentosConvertidos = agendamentos.map(agendamento => {
             const dataHoraUTC = new Date(agendamento.dataHora);
-            const dataHoraLocal = new Date(dataHoraUTC.getTime() - (180 * 60000)); // -3 horas (180 minutos)
+            const dataHoraLocal = converterUTCparaLocal(dataHoraUTC);
             
-            return {
-                ...agendamento._doc,
-                dataHoraLocal: dataHoraLocal,
-                dataHoraDisplay: dataHoraLocal.toLocaleString('pt-BR', {
+            // Se dataLocal for inválido, recalcular
+            let dataLocalDisplay = agendamento.dataLocal;
+            if (!dataLocalDisplay || dataLocalDisplay === "Invalid Date") {
+                dataLocalDisplay = dataHoraLocal.toLocaleString('pt-BR', {
                     timeZone: 'America/Sao_Paulo',
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    hour12: false
+                }).replace(',', ' às ');
+            }
+            
+            // Formatar dia da semana
+            const diasSemana = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+            const diaSemana = diasSemana[dataHoraLocal.getDay()];
+            
+            return {
+                ...agendamento._doc,
+                dataHoraLocal: dataHoraLocal,
+                dataHoraDisplay: dataLocalDisplay,
+                diaSemana: diaSemana,
+                horaLocal: dataHoraLocal.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                    timeZone: 'America/Sao_Paulo'
                 })
             };
         });
@@ -147,6 +186,47 @@ exports.getMeusAgendamentos = async (req, res) => {
     } catch (error) {
         console.error('Erro ao buscar agendamentos: ', error);
         res.status(500).json({ error: 'Erro no servidor ao buscar agendamentos.' })
+    }
+};
+
+// --- ROTA PARA BARBEIRO VER AGENDAMENTOS ---
+exports.getAgendamentosBarbeiro = async (req, res) => {
+    try {
+        const barbeiroNome = req.user.nome;
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        // Converter o início do dia para UTC para comparação
+        const hojeUTC = converterLocalParaUTC(hoje);
+        
+        // Buscar agendamentos futuros e de hoje
+        const agendamentos = await Agendamento.find({ 
+            barbeiro: barbeiroNome,
+            dataHora: { $gte: hojeUTC },
+            status: 'agendado'
+        }).populate('cliente', 'nome').sort({ dataHora: 1 });
+        
+        // Converter para horário local para exibição
+        const agendamentosConvertidos = agendamentos.map(agendamento => {
+            const dataHoraUTC = new Date(agendamento.dataHora);
+            const dataHoraLocal = converterUTCparaLocal(dataHoraUTC);
+            
+            return {
+                ...agendamento._doc,
+                dataHoraLocal: dataHoraLocal,
+                horaDisplay: dataHoraLocal.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                    timeZone: 'America/Sao_Paulo'
+                })
+            };
+        });
+        
+        res.status(200).json(agendamentosConvertidos);
+    } catch (error) {
+        console.error('Erro ao buscar agendamentos do barbeiro:', error);
+        res.status(500).json({ error: 'Erro no servidor.' });
     }
 };
 
@@ -233,13 +313,3 @@ exports.getBarbeiros = async (req, res) => {
         res.status(500).json({ error: 'Erro no servidor ao buscar barbeiros.' });
     }
 };
-
-// --- FUNÇÃO AUXILIAR: Converter UTC para horário local (UTC-3) ---
-function converterUTCparaLocal(dataUTC) {
-    return new Date(dataUTC.getTime() - (180 * 60000)); // -3 horas
-}
-
-// --- FUNÇÃO AUXILIAR: Converter local (UTC-3) para UTC ---
-function converterLocalparaUTC(dataLocal) {
-    return new Date(dataLocal.getTime() + (dataLocal.getTimezoneOffset() * 60000));
-}

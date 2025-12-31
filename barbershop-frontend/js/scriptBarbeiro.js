@@ -89,12 +89,16 @@ async function adicionarWalkin() {
 // --- Função para formatar a hora (CORREÇÃO FINAL) ---
 function formatarHora(dataISO) {
     const data = new Date(dataISO);
-    // Removemos o 'data.setHours...' pois ele estava causando erro duplo.
-    // Usamos apenas o fuso horário oficial 'America/Sao_Paulo'.
-    return data.toLocaleTimeString('pt-BR', {
+    
+    // Converter UTC para horário local (UTC-3)
+    // Subtrair 3 horas (3 * 60 * 60 * 1000 = 10800000 ms)
+    const dataLocal = new Date(data.getTime() - (3 * 60 * 60000));
+    
+    return dataLocal.toLocaleTimeString('pt-BR', {
         timeZone: 'America/Sao_Paulo',
         hour: '2-digit', 
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false
     });
 }
 
