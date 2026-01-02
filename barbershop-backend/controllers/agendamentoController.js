@@ -1,47 +1,23 @@
 // -_-_-_- /controllers/agendamentoController.js -_-_-_-
-// Contém a lógica das rotas do cliente
+// Contém a lógica das rotas do cliente - CORRIGIDO (TIMEZONE)
 
 const Agendamento = require('../models/Agendamento');
 const Feedback = require('../models/Feedback');
 const User = require('../models/User');
 
-// --- FUNÇÕES AUXILIARES DE CONVERSÃO ---
-function converterLocalParaUTC(dataLocal) {
-    // Se o usuário seleciona 20:00 em São Paulo (UTC-3), 
-    // precisamos adicionar 3 horas para armazenar como UTC
-    // Exemplo: 20:00 (São Paulo) -> 23:00 UTC
-    const dataUTC = new Date(dataLocal);
-    dataUTC.setHours(dataUTC.getHours() + 3);
-    return dataUTC;
-}
-
-function converterUTCparaLocal(dataUTC) {
-    // Para mostrar ao usuário: UTC - 3 horas
-    // Exemplo: 23:00 UTC -> 20:00 (São Paulo)
-    const dataLocal = new Date(dataUTC);
-    dataLocal.setHours(dataLocal.getHours() - 3);
-    return dataLocal;
-}
-
-// --- ROTA PARA CRIAR UM NOVO AGENDAMENTO (CORRIGIDO DEFINITIVO) ---
+// --- ROTA PARA CRIAR UM NOVO AGENDAMENTO ---
 exports.criarAgendamento = async (req, res) => {
     try {
         const { servico, barbeiro, dataHora } = req.body;
         const clienteId = req.user.id;
 
-        console.log('DEBUG - Recebido do frontend:', {
-            dataHoraRecebida: dataHora,
-            momentoRecebimento: new Date().toISOString()
-        });
+        // O frontend já envia a data no formato ISO correto (UTC).
+        // Ex: Se o cliente escolheu 10:00 (SP), chega aqui como 13:00 (UTC).
+        // Não precisamos somar nem subtrair horas manualmente.
+        const dataObjeto = new Date(dataHora);
 
-        // 1. A data recebida do frontend está em UTC-3 (horário do usuário)
-        const dataHoraLocal = new Date(dataHora);
-        
-        // 2. Converter para UTC para armazenar no banco
-        const dataHoraUTC = converterLocalParaUTC(dataHoraLocal);
-        
-        // 3. Criar a string visual formatada
-        const dataVisual = dataHoraLocal.toLocaleString('pt-BR', {
+        // Criar a string visual formatada para o Fuso de São Paulo
+        const dataVisual = dataObjeto.toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             day: '2-digit',
             month: '2-digit',
@@ -51,21 +27,16 @@ exports.criarAgendamento = async (req, res) => {
             hour12: false
         }).replace(',', ' às ');
 
-        console.log('DEBUG - Conversões:', {
-            dataHoraLocal: dataHoraLocal.toISOString(),
-            dataHoraUTC: dataHoraUTC.toISOString(),
-            dataVisual
-        });
-
         const novoAgendamento = new Agendamento({
             cliente: clienteId,
             servico,
             barbeiro,
-            dataHora: dataHoraUTC, // Salva como UTC+0 no banco (23:00 para 20:00 local)
-            dataLocal: dataVisual // Salva string formatada para exibição
+            dataHora: dataObjeto, // Salva o objeto Date puro (MongoDB gerencia o UTC)
+            dataLocal: dataVisual // Salva a string "25/10/2023 às 10:00"
         });
 
         await novoAgendamento.save();
+        
         res.status(201).json({ 
             message: 'Agendamento criado com sucesso!',
             agendamento: novoAgendamento
@@ -98,12 +69,11 @@ exports.cancelarAgendamento = async (req, res) => {
     }
 };
 
-// --- ROTA PARA ATUALIZAR/REMARCAR UM AGENDAMENTO (CORRIGIDO) ---
+// --- ROTA PARA ATUALIZAR/REMARCAR UM AGENDAMENTO ---
 exports.remarcarAgendamento = async (req, res) => {
     try {
         const clienteId = req.user.id;
         const agendamentoId = req.params.id;
-        
         const { dataHora } = req.body;
 
         const agendamento = await Agendamento.findById(agendamentoId);
@@ -115,16 +85,13 @@ exports.remarcarAgendamento = async (req, res) => {
             return res.status(403).json({ error: 'Você não tem permissão para alterar esse agendamento.' });
         }
 
-        // Converter para UTC
-        const dataHoraLocal = new Date(dataHora);
-        const dataHoraUTC = converterLocalParaUTC(dataHoraLocal);
+        // Conversão limpa
+        const dataObjeto = new Date(dataHora);
 
-        // Atualizar com a data convertida para UTC
-        agendamento.dataHora = dataHoraUTC;
+        // Atualizar data real e string visual
+        agendamento.dataHora = dataObjeto;
         agendamento.status = 'agendado';
-
-        // Atualizar também a string visual
-        agendamento.dataLocal = dataHoraLocal.toLocaleString('pt-BR', {
+        agendamento.dataLocal = dataObjeto.toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             day: '2-digit',
             month: '2-digit',
@@ -151,152 +118,119 @@ exports.getMeusAgendamentos = async (req, res) => {
         const clientId = req.user.id;
         const agendamentos = await Agendamento.find({ cliente: clientId }).sort({ dataHora: 1 });
         
-        // Converter horários UTC do banco para horário local (UTC-3)
-        const agendamentosConvertidos = agendamentos.map(agendamento => {
-            const dataHoraUTC = new Date(agendamento.dataHora);
-            const dataHoraLocal = converterUTCparaLocal(dataHoraUTC);
+        // Formata para exibição sem alterar a data original do banco
+        const agendamentosFormatados = agendamentos.map(agendamento => {
+            const dataObj = new Date(agendamento.dataHora);
             
-            // Se dataLocal for inválido, recalcular
-            let dataLocalDisplay = agendamento.dataLocal;
-            if (!dataLocalDisplay || dataLocalDisplay === "Invalid Date") {
-                dataLocalDisplay = dataHoraLocal.toLocaleString('pt-BR', {
-                    timeZone: 'America/Sao_Paulo',
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }).replace(',', ' às ');
-            }
-            
-            // Formatar dia da semana
+            // Força a exibição no horário de SP
+            const dataDisplay = dataObj.toLocaleString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(',', ' às ');
+
+            // Dia da semana com base na hora local de SP
+            // Precisamos criar um objeto Date ajustado para pegar o getDay() correto do Brasil
+            const dataSP = new Date(dataObj.toLocaleString("en-US", {timeZone: "America/Sao_Paulo"}));
             const diasSemana = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
-            const diaSemana = diasSemana[dataHoraLocal.getDay()];
+            const diaSemana = diasSemana[dataSP.getDay()];
             
             return {
                 ...agendamento._doc,
-                dataHoraLocal: dataHoraLocal,
-                dataHoraDisplay: dataLocalDisplay,
-                diaSemana: diaSemana,
-                horaLocal: dataHoraLocal.toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
-                    timeZone: 'America/Sao_Paulo'
-                })
+                dataHoraDisplay: dataDisplay, // Usa o calculado agora para garantir consistência
+                diaSemana: diaSemana
             };
         });
         
-        res.status(200).json(agendamentosConvertidos);
+        res.status(200).json(agendamentosFormatados);
     } catch (error) {
         console.error('Erro ao buscar agendamentos: ', error);
         res.status(500).json({ error: 'Erro no servidor ao buscar agendamentos.' })
     }
 };
 
-// --- ROTA PARA BARBEIRO VER AGENDAMENTOS ---
+// --- ROTA PARA BARBEIRO VER AGENDAMENTOS (Do Dia) ---
 exports.getAgendamentosBarbeiro = async (req, res) => {
     try {
         const barbeiroNome = req.user.nome;
         
-        // Data atual em UTC-3 (São Paulo)
-        const hoje = new Date();
-        const hojeSP = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-        hojeSP.setHours(0, 0, 0, 0);
+        // Define o início e fim do dia HOJE em São Paulo
+        const hojeSP = new Date().toLocaleString("en-US", {timeZone: "America/Sao_Paulo"});
+        const inicioDiaSP = new Date(hojeSP);
+        inicioDiaSP.setHours(0, 0, 0, 0);
         
-        // Converter início do dia para UTC
-        const hojeInicioUTC = converterLocalParaUTC(hojeSP);
-        
-        // Buscar agendamentos do dia atual (UTC)
-        const agendamentos = await Agendamento.find({ 
+        const fimDiaSP = new Date(hojeSP);
+        fimDiaSP.setHours(23, 59, 59, 999);
+
+        // Busca no banco qualquer data que caia entre o inicio e fim do dia de SP
+        // O Mongo faz a comparação correta mesmo guardando em UTC
+        const agendamentos = await Agendamentos.find({ 
             barbeiro: barbeiroNome,
-            dataHora: { $gte: hojeInicioUTC },
+            dataHora: { 
+                $gte: inicioDiaSP, 
+                $lte: fimDiaSP 
+            },
             status: 'agendado'
         }).populate('cliente', 'nome').sort({ dataHora: 1 });
         
-        // Converter para horário local e formatar
-        const agendamentosConvertidos = agendamentos.map(agendamento => {
-            const dataHoraUTC = new Date(agendamento.dataHora);
-            const dataHoraLocal = converterUTCparaLocal(dataHoraUTC);
-            
-            // Verificar se é hoje (comparação em UTC-3)
-            const hojeSP = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-            hojeSP.setHours(0, 0, 0, 0);
-            const dataAgendamentoSP = new Date(dataHoraLocal);
-            dataAgendamentoSP.setHours(0, 0, 0, 0);
-            
-            // Só retornar agendamentos de hoje
-            if (dataAgendamentoSP.getTime() === hojeSP.getTime()) {
-                return {
-                    _id: agendamento._id,
-                    cliente: agendamento.cliente,
-                    servico: agendamento.servico,
-                    dataHora: dataHoraUTC, // Mantém UTC para compatibilidade
-                    dataHoraLocal: dataHoraLocal, // Hora local para cálculos
-                    horaDisplay: dataHoraLocal.toLocaleTimeString('pt-BR', {
-                        timeZone: 'America/Sao_Paulo',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    })
-                };
-            }
-            return null;
-        }).filter(item => item !== null); // Remove itens não de hoje
-        
-        console.log('DEBUG - Agendamentos barbeiro:', {
-            barbeiro: barbeiroNome,
-            hojeInicioUTC: hojeInicioUTC.toISOString(),
-            totalEncontrados: agendamentos.length,
-            totalHoje: agendamentosConvertidos.length,
-            agendamentos: agendamentosConvertidos.map(a => ({
-                cliente: a.cliente.nome,
-                horaUTC: a.dataHora.toISOString(),
-                horaLocal: a.dataHoraLocal.toISOString(),
-                horaDisplay: a.horaDisplay
-            }))
+        const agendamentosFormatados = agendamentos.map(agendamento => {
+            const dataObj = new Date(agendamento.dataHora);
+            return {
+                _id: agendamento._id,
+                cliente: agendamento.cliente,
+                servico: agendamento.servico,
+                dataHora: agendamento.dataHora,
+                horaDisplay: dataObj.toLocaleTimeString('pt-BR', {
+                    timeZone: 'America/Sao_Paulo',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                })
+            };
         });
         
-        res.status(200).json(agendamentosConvertidos);
+        res.status(200).json(agendamentosFormatados);
     } catch (error) {
         console.error('Erro ao buscar agendamentos do barbeiro:', error);
         res.status(500).json({ error: 'Erro no servidor.' });
     }
 };
 
-// --- ROTA BUSCAR NOTIFICAÇÃO ---
+// --- ROTA BUSCAR NOTIFICAÇÃO (Aniversário) ---
 exports.getMinhasNotificacoes = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ error: 'Usuário não encontrado.' });
-        }
+        if (!user) return res.status(404).json({ error: 'Usuário não encontrado.' });
 
         const notificacoes = [];
         
-        // Usar horário local (UTC-3) para verificação
-        const hoje = new Date();
-        const hojeLocal = new Date(hoje.toLocaleString("en-US", {timeZone: "America/Sao_Paulo"}));
+        // Compara dia e mês ignorando o ano e o fuso exato, focando na data local
+        const hoje = new Date().toLocaleString("en-US", {timeZone: "America/Sao_Paulo"});
+        const hojeObj = new Date(hoje);
         
+        // Data de nascimento do banco (assumindo que foi salva corretamente ou é string)
+        // Se for Date object no banco, precisamos ter cuidado, mas geralmente aniversário se compara apenas dia/mês
         const aniversario = new Date(user.dataNascimento);
+        // Ajuste simples para dia/mes UTC vs Local: vamos usar UTC methods no aniversario se ele foi salvo como UTC puro sem hora
         
-        // Ajustar fuso horário para comparação
-        aniversario.setUTCHours(0, 0, 0, 0);
-        const hojeAjustado = new Date(hojeLocal);
-        hojeAjustado.setUTCHours(0, 0, 0, 0);
-
-        if (aniversario.getUTCMonth() === hojeAjustado.getMonth() && 
-            aniversario.getUTCDate() === hojeAjustado.getDate()) {
+        // Abordagem robusta:
+        if ((aniversario.getUTCDate() === hojeObj.getDate()) && 
+            (aniversario.getUTCMonth() === hojeObj.getMonth())) {
+             
             notificacoes.push({
                 tipo: 'info',
                 mensagem: `<strong>Feliz Aniversário, ${user.nome}!</strong> Você ganhou <strong>10% de desconto</strong> no seu próximo corte como presente!`
             });
         }
+        
         res.status(200).json(notificacoes);
     } catch (error) {
-        console.error('Erro ao buscar dados do dashboard: ', error);
-        res.status(500).json({ error: 'Erro no servidor ao buscar dados.' })
+        console.error('Erro ao buscar notificações: ', error);
+        res.status(500).json({ error: 'Erro no servidor.' })
     }
 };
 
