@@ -1,51 +1,73 @@
-/**
- * Script para o Painel do Cliente (scriptCliente.js)
- * Gerencia agendamentos, notificações, feedbacks e interface do dashboard.
- */
+// URL Base da API (ajuste se o backend estiver em outro lugar)
+const API_URL = 'https://barbershopv2.onrender.com/api';
 
-// URL Base da API - Altere para a URL do Render em produção
-const API_URL = 'http://localhost:3000/api';
+// --- VARIÁVEIS GLOBAIS DE CONTROLE ---
+let idParaCancelar = null;
+let idParaRemarcar = null;
 
-// --- CONTROLE DE MODAIS ---
+// --- FUNÇÕES DE MODAL (Globais para funcionarem no HTML onclick) ---
 function abrirModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = "flex";
+    if (modal) {
+        modal.style.display = "flex";
+    }
 }
 
 function fecharModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = "none";
+    if (modal) {
+        modal.style.display = "none";
+    }
 }
 
-// --- FUNÇÕES AUXILIARES DE FORMATAÇÃO (HORÁRIO LOCAL) ---
+// --- FUNÇÕES AUXILIARES DE DATA (Compatíveis com a correção do Backend) ---
 function formatarData(dataISO) { 
+    if (!dataISO) return 'Data Inválida';
     const data = new Date(dataISO);
-    // Usamos o padrão local para evitar erros de fuso horário (UTC)
-    return data.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+    return data.toLocaleDateString('pt-BR', {timeZone: 'America/Sao_Paulo', weekday: 'long', day: '2-digit', month: '2-digit'});
 }
 
 function formatarHora(dataISO) {
+    if (!dataISO) return '';
     const data = new Date(dataISO);
-    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return data.toLocaleTimeString('pt-BR', {timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit'});
 }
 
-// --- VARIÁVEIS GLOBAIS DE ESTADO ---
-let idParaCancelar = null;
-let idParaRemarcar = null;
+// --- FUNÇÕES DE AÇÃO DO USUÁRIO ---
+function abrirModalDesmarcar(agendamentoId) {
+    idParaCancelar = agendamentoId; 
+    abrirModal('modalDesmarcar'); 
+}
 
-// --- FUNÇÃO PARA ENVIAR FEEDBACK ---  
+function abrirModalRemarcar(agendamentoObjeto) {
+    // Se vier como string (do HTML), converte de volta se necessário, 
+    // mas geralmente passamos o objeto. Se der erro, passamos só o ID e buscamos dados.
+    // Para simplificar no onclick do HTML: onclick='abrirModalRemarcar(this.dataset.agendamento)'
+    
+    // Assumindo que o objeto chega corretamente via JSON.stringify no HTML
+    idParaRemarcar = agendamentoObjeto._id; 
+
+    const textoModal = document.getElementById('remarcar-texto-atual');
+    if(textoModal) {
+        textoModal.innerHTML = `Seu agendamento atual é: <strong>${formatarData(agendamentoObjeto.dataHora)}</strong> às <strong>${formatarHora(agendamentoObjeto.dataHora)}</strong>`;
+    }
+
+    abrirModal('modalRemarcar'); 
+}
+
 async function enviarFeedback(agendamentoId, barbeiroNome) {
-    const comentario = prompt(`Como foi seu atendimento com ${barbeiroNome}?`);
+    const comentario = prompt(`Deixe seu feedback sobre o atendimento com ${barbeiroNome}:`);
 
     if (!comentario || comentario.trim() === '') {
+        alert('Feedback cancelado');
         return;
     }
 
     const token = localStorage.getItem('barberToken');
-    const dadosFeedback = { agendamentoId, barbeiroNome, comentario };
+    const dadosFeedback = {agendamentoId, barbeiroNome, comentario};
 
     try {
-        const response = await fetch(`${API_URL}/agendamentos/feedback`, {
+        const response = await fetch(`${API_URL}/agendamentos/feedback`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,31 +79,170 @@ async function enviarFeedback(agendamentoId, barbeiroNome) {
         const result = await response.json();
 
         if (response.ok) {
-            alert('Obrigado pelo seu feedback!');
-            window.location.reload();
+            alert(result.message); 
+            window.location.reload(); 
         } else {
-            alert('Erro: ' + result.error);
+            alert('Erro: ' + result.error); 
         }
     } catch (error) {
-        console.error('Erro ao enviar feedback:', error);
+        console.error('Erro ao enviar feedback', error);
         alert('Erro de conexão ao enviar feedback.');
     }
 }
 
-// --- FUNÇÕES DE ABERTURA DE MODAIS ESPECÍFICOS ---
-function abrirModalDesmarcar(agendamentoId) {
-    idParaCancelar = agendamentoId;
-    abrirModal('modalDesmarcar');
-}
 
-function abrirModalRemarcar(agendamento) {
-    idParaRemarcar = agendamento._id;
-    const textoModal = document.getElementById('remarcar-texto-atual');
-    textoModal.innerHTML = `Seu agendamento atual: <strong>${formatarData(agendamento.dataHora)}</strong> às <strong>${formatarHora(agendamento.dataHora)}</strong>`;
-    abrirModal('modalRemarcar');
-}
+// =========================================================
+// === LÓGICA PRINCIPAL (CARREGAMENTO DO DOM) ===
+// =========================================================
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. VERIFICAÇÃO DE AUTENTICAÇÃO
+    const token = localStorage.getItem('barberToken');
+    const nomeCliente = localStorage.getItem('barberUserNome');
 
-// --- POPULADORES DE INTERFACE ---
+    if (!token) {
+        console.error("Token não encontrado. Redirecionando...");
+        window.location.href = 'BarberLOGIN.html'; // Força redirecionamento se não tiver token
+        return;
+    }
+
+    // 2. ATUALIZA HEADER
+    const headerTitulo = document.querySelector('.header h1');
+    if (nomeCliente && headerTitulo){
+        headerTitulo.textContent = `Olá, ${nomeCliente}`;
+    }
+
+    // 3. CONFIGURAÇÃO DOS EVENT LISTENERS (Aqui estava o erro!)
+    // Movemos para cá para garantir que o HTML já existe
+    
+    // -- Form Agendar --
+    const formAgendamento = document.getElementById('form-agendar');
+    if (formAgendamento) {
+        formAgendamento.addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+            const servico = document.getElementById('servico').value;
+            const barbeiro = document.getElementById('barbeiro').value;
+            const dia = document.getElementById('dia').value;
+            const horario = document.getElementById('horario').value;
+
+            if (!dia || !horario) { alert("Selecione dia e horário."); return; }
+
+            // Lógica de Fuso: Navegador (BRT) -> ISO (UTC) -> Backend
+            const dataLocal = new Date(`${dia}T${horario}`);
+            const dataHoraISO = dataLocal.toISOString();
+
+            try {
+                const response = await fetch(`${API_URL}/agendamentos`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ servico, barbeiro, dataHora: dataHoraISO })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    fecharModal('modalAgendamento');
+                    window.location.reload(); 
+                } else {
+                    alert('Erro: '+ result.error);
+                }
+            } catch (error) {
+                console.log('Erro ao agendar: ', error);
+                alert('Erro ao agendar.');
+            }
+        });
+    }
+
+    // -- Form Cancelar --
+    const formCancelamento = document.getElementById('form-cancelar');
+    if (formCancelamento) {
+        formCancelamento.addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+            if (!idParaCancelar) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/agendamentos/${idParaCancelar}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    idParaCancelar = null; 
+                    fecharModal('modalDesmarcar');
+                    window.location.reload(); 
+                } else {
+                    alert('Erro: ' + result.error);
+                }
+            } catch (error) {
+                alert('Erro ao cancelar.');
+            }
+        });
+    }
+
+    // -- Form Remarcar --
+    const formRemarcar = document.getElementById('form-remarcar');
+    if (formRemarcar) {
+        formRemarcar.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const dia = document.getElementById('nova-data').value;
+            const horario = document.getElementById('novo-horario').value;
+
+            if (!dia || !horario) { alert("Selecione data e horário."); return; }
+            if (!idParaRemarcar) return;
+
+            const dataLocal = new Date(`${dia}T${horario}`);
+            const dataHoraISO = dataLocal.toISOString();
+
+            try {
+                const response = await fetch(`${API_URL}/agendamentos/${idParaRemarcar}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ dataHora: dataHoraISO }) 
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    idParaRemarcar = null;
+                    fecharModal('modalRemarcar');
+                    window.location.reload();
+                } else {
+                    alert('Erro: ' + result.error);
+                }
+            } catch (error) {
+                alert('Erro ao remarcar.');
+            }
+        });
+    }
+
+    // 4. CARREGAMENTO DE DADOS (POPULAR TELA)
+    try {
+        const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+
+        // Agendamentos
+        const resAgendamentos = await fetch(`${API_URL}/agendamentos/meus`, { headers });
+        if (resAgendamentos.ok) {
+            const agendamentos = await resAgendamentos.json();
+            popularDashboard(agendamentos);
+        }
+
+        // Notificações
+        const resNotificacoes = await fetch(`${API_URL}/agendamentos/notificacoes`, { headers });
+        if (resNotificacoes.ok) {
+            popularNotificacoes(await resNotificacoes.json());
+        }
+
+        // Barbeiros
+        const resBarbeiros = await fetch(`${API_URL}/agendamentos/barbeiros`, { headers });
+        if (resBarbeiros.ok) {
+            popularDropdownBarbeiros(await resBarbeiros.json());
+        }
+
+    } catch (error) {
+        console.error('Erro ao carregar dados iniciais: ', error);
+        // Opcional: tratar erro de token aqui também
+    }
+});
+
+// --- FUNÇÕES DE POPULAR (MANTIDAS EXTERNAS PARA ORGANIZAÇÃO) ---
 
 function popularDropdownBarbeiros(barbeiros) {
     const selectBarbeiro = document.getElementById('barbeiro');
@@ -90,40 +251,40 @@ function popularDropdownBarbeiros(barbeiros) {
     selectBarbeiro.innerHTML = '<option value="">Qualquer um</option>';
     barbeiros.forEach(barbeiro => {
         const option = document.createElement('option');
-        option.value = barbeiro.nome;
-        option.textContent = barbeiro.nome;
+        option.value = barbeiro.nome; 
+        option.textContent = barbeiro.nome; 
         selectBarbeiro.appendChild(option);
     });
 }
 
 function popularNotificacoes(notificacoes) {
-    const container = document.querySelector('.notificacoes-area');
-    if (!container) return;
-    
-    container.innerHTML = '';
+    const containerNotificacoes = document.querySelector('.notificacoes-area');
+    if (!containerNotificacoes) return;
+
+    containerNotificacoes.innerHTML = ''; 
     notificacoes.forEach(notif => {
         const divAlerta = document.createElement('div');
-        divAlerta.className = `alerta ${notif.tipo}`;
+        divAlerta.className = `alerta ${notif.tipo}`; 
         divAlerta.innerHTML = notif.mensagem;
-        container.appendChild(divAlerta);
+        containerNotificacoes.appendChild(divAlerta);
     });
 }
 
 function popularDashboard(agendamentos) {
     const agora = new Date();
     const containerProximo = document.querySelector('.proximo-corte');
+    
+    // Verifica se container existe antes de manipular
     if (!containerProximo) return;
 
-    /**
-     * LÓGICA DE EXIBIÇÃO:
-     * O agendamento aparece se for no futuro OU se começou há menos de 60 minutos.
-     * Isso evita que o agendamento suma da tela do cliente assim que o relógio bate a hora marcada.
-     */
-    const proximo = agendamentos.find(ag => {
-        const dataAg = new Date(ag.dataHora);
-        const tempoLimite = new Date(agora.getTime() - 60 * 60000); // 60 minutos atrás
-        return (dataAg > tempoLimite) && ag.status === 'agendado';
-    });
+    // Filtra apenas agendamentos futuros
+    const proximo = agendamentos.find(ag =>
+        new Date(ag.dataHora) > agora && ag.status === 'agendado'
+    );
+
+    // Precisamos de um truque para passar o objeto no onclick sem quebrar as aspas
+    // A melhor forma é usar encodeURIComponent ou salvar em variavel global, mas aqui vai o fix simples:
+    const proximoString = proximo ? JSON.stringify(proximo).replace(/"/g, '&quot;') : '';
 
     if (proximo) {
         containerProximo.innerHTML = `
@@ -136,178 +297,60 @@ function popularDashboard(agendamentos) {
             Serviço: <strong>${proximo.servico}</strong>
         </div>
         <div class="botoes-acao">
-            <button class="btn-remarcar" id="btn-trigger-remarcar">Remarcar</button>
-            <button class="btn-desmarcar" id="btn-trigger-desmarcar">Desmarcar Corte</button>
+            <button class="btn-remarcar" onclick='abrirModalRemarcar(${JSON.stringify(proximo)})'>Remarcar</button>
+            <button class="btn-desmarcar" onclick="abrirModalDesmarcar('${proximo._id}')">Desmarcar Corte</button>
         </div>
         `; 
-
-        // Adicionando eventos aos botões gerados dinamicamente
-        document.getElementById('btn-trigger-remarcar').onclick = () => abrirModalRemarcar(proximo);
-        document.getElementById('btn-trigger-desmarcar').onclick = () => abrirModalDesmarcar(proximo._id);
-
     } else {
         containerProximo.innerHTML = `
         <h3>Você não tem nenhum agendamento futuro.</h3>
-        <div class="detalhes">Clique em "Agendar Novo Corte" para marcar seu horário!</div>
+        <div class="detalhes">
+            Clique em "Agendar Novo Corte" para marcar seu horário!
+        </div>
         `;
     }
 
-    // --- POPULAR HISTÓRICO ---
+    // Histórico
     const listaHistorico = document.querySelector('.historico-lista');
     if (!listaHistorico) return;
-
-    // Filtra agendamentos que já passaram (mais de 1 hora atrás) ou estão concluídos/cancelados
+    
     const historico = agendamentos
-        .filter(ag => new Date(ag.dataHora) < new Date(agora.getTime() - 60 * 60000) || ag.status !== 'agendado')
+        .filter(ag => new Date(ag.dataHora) < agora)
         .sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
     
     listaHistorico.innerHTML = ''; 
     
     if (historico.length === 0) {
-        listaHistorico.innerHTML = '<li class="historico-item"><div class="info"><span>Seu histórico aparecerá aqui após o primeiro corte.</span></div></li>';
+        listaHistorico.innerHTML = '<li class="historico-item"><div class="info"><span>Seu historico de cortes aparecerá aqui.</span></div></li>';
     } else {
         historico.forEach(ag => {
-            let acaoHtml = ''; 
+            let feedbackButtonHtml = ''; 
+            
             if (ag.status === 'concluido') {
-                acaoHtml = ag.feedbackEnviado 
-                    ? '<span class="feedback-concluido">Feedback Enviado</span>' 
-                    : `<a href="#" class="btn-feedback" id="fb-btn-${ag._id}">Deixar Feedback</a>`;
+                if (ag.feedbackEnviado) {
+                    feedbackButtonHtml = '<span class="feedback-concluido">Feedback Enviado</span>';
+                } else {
+                    feedbackButtonHtml = `<a href="#" class="btn-feedback" onclick="event.preventDefault(); enviarFeedback('${ag._id}', '${ag.barbeiro}')">Deixar Feedback</a>`;
+                }
             } else if (ag.status === 'cancelado') {
-                acaoHtml = '<span class="feedback-concluido" style="color: #dc3545;">Cancelado</span>';
+                feedbackButtonHtml = '<span class="feedback-concluido" style="color: #dc3545;">Cancelado</span>';
+            } else {
+                // Caso 'agendado' mas no passado (falta de comparecimento ou sistema não atualizou)
+                feedbackButtonHtml = '<span class="feedback-concluido">Pendente</span>';
             }
         
-            const item = document.createElement('li');
-            item.className = 'historico-item';
-            item.innerHTML = `
-                <div class="info">
-                    <span class="servico">${ag.servico}</span>
-                    <span>Data: ${formatarData(ag.dataHora)} às ${formatarHora(ag.dataHora)}</span>
-                    <span>Barbeiro: ${ag.barbeiro}</span>
-                    <span>Valor: <strong>${ag.valor ? `R$ ${ag.valor.toFixed(2)}` : 'N/D'}</strong></span>
-                </div>
-                <div class="acao-historico">${acaoHtml}</div>
-            `;
-            listaHistorico.appendChild(item);
-
-            // Adiciona evento de feedback se o botão existir
-            const btnFb = document.getElementById(`fb-btn-${ag._id}`);
-            if (btnFb) {
-                btnFb.onclick = (e) => {
-                    e.preventDefault();
-                    enviarFeedback(ag._id, ag.barbeiro);
-                };
-            }
+            const item = `
+                <li class="historico-item">
+                    <div class="info">
+                        <span class="servico">${ag.servico}</span>
+                        <span>Data: ${formatarData(ag.dataHora)} às ${formatarHora(ag.dataHora)}</span>
+                        <span>Barbeiro: ${ag.barbeiro}</span>
+                        <span>Valor: <strong>${ag.valor ? `R$ ${ag.valor.toFixed(2)}` : 'N/D'}</strong></span>
+                    </div>
+                    ${feedbackButtonHtml}
+                </li>
+                `;
+            listaHistorico.innerHTML += item;
         });
     }
 }
-
-// --- LÓGICA PRINCIPAL AO CARREGAR ---
-document.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('barberToken');
-    const nomeCliente = localStorage.getItem('barberUserNome');
-
-    if (!token) {
-        window.location.href = 'BarberLOGIN.html';
-        return;
-    }
-
-    const headerTitulo = document.querySelector('.header h1');
-    if (headerTitulo && nomeCliente) {
-        headerTitulo.textContent = `Olá, ${nomeCliente.split(' ')[0]}`;
-    }
-
-    try {
-        const headers = { 'Authorization': 'Bearer ' + token };
-
-        // 1. Busca agendamentos
-        const resAg = await fetch(`${API_URL}/agendamentos/meus`, { headers });
-        if (resAg.ok) popularDashboard(await resAg.json());
-
-        // 2. Busca notificações
-        const resNotif = await fetch(`${API_URL}/agendamentos/notificacoes`, { headers });
-        if (resNotif.ok) popularNotificacoes(await resNotif.json());
-
-        // 3. Busca lista de barbeiros
-        const resBarb = await fetch(`${API_URL}/agendamentos/barbeiros`, { headers });
-        if (resBarb.ok) popularDropdownBarbeiros(await resBarb.json());
-
-    } catch (error) {
-        console.error('Erro ao carregar dashboard:', error);
-    }
-});
-
-// --- LISTENERS DE FORMULÁRIO ---
-
-// Agendar
-document.getElementById('form-agendar')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const token = localStorage.getItem('barberToken');
-    const payload = {
-        servico: document.getElementById('servico').value,
-        barbeiro: document.getElementById('barbeiro').value,
-        dia: document.getElementById('dia').value,
-        horario: document.getElementById('horario').value
-    };
-
-    try {
-        const res = await fetch(`${API_URL}/agendamentos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-            body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        if (res.ok) {
-            alert(result.message);
-            window.location.reload();
-        } else {
-            alert(result.error);
-        }
-    } catch (err) { alert('Erro ao conectar com o servidor.'); }
-});
-
-// Cancelar
-document.getElementById('form-cancelar')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (!idParaCancelar) return;
-    const token = localStorage.getItem('barberToken');
-
-    try {
-        const res = await fetch(`${API_URL}/agendamentos/${idParaCancelar}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (res.ok) {
-            alert('Agendamento cancelado.');
-            window.location.reload();
-        } else {
-            const data = await res.json();
-            alert(data.error);
-        }
-    } catch (err) { alert('Erro ao cancelar.'); }
-});
-
-// Remarcar
-document.getElementById('form-remarcar')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (!idParaRemarcar) return;
-    const token = localStorage.getItem('barberToken');
-    const payload = {
-        dia: document.getElementById('nova-data').value,
-        horario: document.getElementById('novo-horario').value
-    };
-
-    try {
-        const res = await fetch(`${API_URL}/agendamentos/${idParaRemarcar}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-            body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-            alert('Agendamento remarcado!');
-            window.location.reload();
-        } else {
-            const data = await res.json();
-            alert(data.error);
-        }
-    } catch (err) { alert('Erro ao remarcar.'); }
-});
