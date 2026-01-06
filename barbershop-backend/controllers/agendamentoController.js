@@ -1,5 +1,4 @@
 // -_-_-_- /controllers/agendamentoController.js -_-_-_-
-// Contém a lógica das rotas do cliente - CORRIGIDO (TIMEZONE)
 
 const Agendamento = require('../models/Agendamento');
 const Feedback = require('../models/Feedback');
@@ -8,42 +7,29 @@ const User = require('../models/User');
 // --- ROTA PARA CRIAR UM NOVO AGENDAMENTO ---
 exports.criarAgendamento = async (req, res) => {
     try {
-        const { servico, barbeiro, dataHora } = req.body;
+        const { servico, barbeiro, dia, horario } = req.body;
         const clienteId = req.user.id;
+        
+        // CORREÇÃO: Criar a data garantindo que o JS entenda como horário local
+        // Usamos o formato YYYY-MM-DDTHH:mm para o construtor Date
+        const dataHoraAgendamento = new Date(`${dia}T${horario}:00`);
 
-        // O frontend já envia a data no formato ISO correto (UTC).
-        // Ex: Se o cliente escolheu 10:00 (SP), chega aqui como 13:00 (UTC).
-        // Não precisamos somar nem subtrair horas manualmente.
-        const dataObjeto = new Date(dataHora);
-
-        // Criar a string visual formatada para o Fuso de São Paulo
-        const dataVisual = dataObjeto.toLocaleString('pt-BR', {
-            timeZone: 'America/Sao_Paulo',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        }).replace(',', ' às ');
+        if (isNaN(dataHoraAgendamento.getTime())) {
+            return res.status(400).json({ error: 'Data ou horário inválidos.' });
+        }
 
         const novoAgendamento = new Agendamento({
             cliente: clienteId,
             servico,
             barbeiro,
-            dataHora: dataObjeto, // Salva o objeto Date puro (MongoDB gerencia o UTC)
-            dataLocal: dataVisual // Salva a string "25/10/2023 às 10:00"
+            dataHora: dataHoraAgendamento
         });
 
         await novoAgendamento.save();
-        
-        res.status(201).json({ 
-            message: 'Agendamento criado com sucesso!',
-            agendamento: novoAgendamento
-        });
+        res.status(201).json({ message: 'Seu agendamento foi criado com sucesso! Nos vemos em breve :)' });
     } catch (error) {
         console.error('Erro ao agendar:', error);
-        res.status(500).json({ error: 'Erro no servidor.' });
+        res.status(500).json({ error: 'Infelizmente ocorreu um erro no servidor.' });
     }
 };
 
